@@ -54,14 +54,13 @@ subgraph Retirement
     dist-early((Early distributions<br/>before 59.5y old<br/>See Roth Ladder))
     dist-retirement((Distributions<br/>after 59.5y old))
     subgraph 401K - Vanguard
-        401k-info{{Max total contributions to 401K = <b>$69,000</b>}}:::blue
+        401k-info{{Max total contributions<br/>$69,000}}:::blue
         401k-trad[Traditional 401K]:::red
         401k-roth[Roth 401K]:::green
     end
 end
 
 %% Arrows / Flows
-
 Company --Employer contribution<br/>50% match<br/><b>$11,500</b>--> 401k-trad
 Company === pretax
 pretax --Employee contribution<br/><b>$23,000</b>--> 401k-trad
