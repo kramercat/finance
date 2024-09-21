@@ -80,8 +80,7 @@ end
 
 subgraph Distributions
    age-retired{{Withdrawals<br/>after 59.5y}}:::blue
-   withdraw-401k-contributions{{401K<br/>Contributions<br/><br/>Tax free}}:::green
-   withdraw-401k-earnings{{401K<br/>Earnings / Gains<br/><br/>Tax owed}}:::purple
+   withdraw-401k{{Traditional 401K<br/>All funds<br/><br/>Tax owed}}:::purple
    withdraw-roth{{Roth IRA<br/>All funds<br/><br/>Tax free}}:::green
 end
 
@@ -90,8 +89,8 @@ withdraw-early-contributions ---> checking
 withdraw-early-earnings --> checking & taxes
 
 401k-trad --> Distributions
-withdraw-401k-contributions & withdraw-401k-earnings --> checking
-withdraw-401k-earnings --> taxes
+withdraw-401k --> checking
+withdraw-401k --> taxes
 ira-roth --> Distributions
 withdraw-roth --> checking
 
