@@ -72,24 +72,28 @@ posttax --Post tax contribution<br/><b>$34,500</b><br/>--> 401k-trad
 posttax --Backdoor Roth<br/><b>$7,000</b><br/><i>Only do this if you do not have any pre-tax money in traditional IRAs</i>--> ira-trad 
 ira-trad --Immediate conversion--> ira-roth
 
-401k-trad --Taxes owed on gains--> dist-retirement
-ira-roth --No taxes owed on gains--> dist-retirement
-
-dist-retirement{{Distributions<br/>after 59.5y old}}:::purple
-dist-retirement --> checking
-
-subgraph Early Withdrawal
-   age{{before<br/>59.5y}}:::blue
-   withdraw-early-contributions{{Contributions<br/>No penalty<br/>No tax}}:::purple
-   withdraw-early-earnings{{Earnings<br/>Yes Penalty<br/>Yes Tax}}:::purple
+subgraph Early
+   age-early{{Withdrawals<br/>before 59.5y}}:::blue
+   withdraw-early-contributions{{Contributions<br/><br/>Tax free}}:::green
+   withdraw-early-earnings{{Earnings / Gains<br/><br/>Tax owed<br/>Penalty owed}}:::purple
 end
 
-ira-roth --> withdraw-early-contributions
-withdraw-early-contributions --> checking
+subgraph Distributions
+   age-retired{{Withdrawals<br/>after 59.5y}}:::blue
+   withdraw-401k-contributions{{401K<br/>Contributions<br/><br/>Tax free}}:::green
+   withdraw-401k-earnings{{401K<br/>Earnings / Gains<br/><br/>Tax owed}}:::purple
+   withdraw-roth{{Roth IRA<br/>All funds<br/><br/>Tax free}}:::green
+end
 
-ira-roth --> withdraw-early-earnings
-withdraw-early-earnings --> taxes
-withdraw-early-earnings --> checking
+ira-roth --> Early
+withdraw-early-contributions ---> checking
+withdraw-early-earnings --> checking & taxes
+
+401k-trad --> Distributions
+withdraw-401k-contributions & withdraw-401k-earnings --> checking
+withdraw-401k-earnings --> taxes
+ira-roth --> Distributions
+withdraw-roth --> checking
 
 posttax ==Paycheck==> checking
 pretax --Withholding--> taxes
