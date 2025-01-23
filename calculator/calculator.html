@@ -1,0 +1,467 @@
+<!--
+Basic retirement calculator, because the other ones all suck.
+
+Created by Kevin Zhu, 2025
+Powered by leaflet.js, bootstrap, and the GNU General Public License v3.0
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+For educational and demonstration purposes.
+Accuracy not guaranteed. Please double check all your calculations.
+This is not to be used as financial advice, and I take no responsibility for how you use this tool.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Retirement Calculator</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Bootstrap 4.0 distributed CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Leaflet distributed CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin="" />
+    <!-- Leaflet distributed JS -->
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+        crossorigin=""></script>
+    <!-- Chart.js distributed JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <!-- Chart.js datalabels plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- Custom stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body onload="bodyOnLoad()">
+    <div id="main">
+        <div id='banner'>
+            <!-- <img id='logo' src="images/logos/" alt="Retirement Calculator Logo"> -->
+            <p class='bannerHeading'>Retirement Calculator</p>
+        </div>
+
+        <div id='instructions'>
+            <p id='info'></p>
+        </div>
+        <hr>
+
+        <div id='inputsContainer'>
+            <p class='header'>Inputs</p>
+            <div id='401k'>
+                <p class='header'>401K</p>
+                <table>
+                    <tr>
+                        <td>Current Balance:</td>
+                        <td><span>$</span><input type="text" id="input-401kBalance" value=100,000 min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Annual Contribution:</td>
+                        <td><span>$</span><input type="text" id="input-401kContribution" value=23,500 min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Annual Return:</td>
+                        <td><input type="text" id="input-401kReturn" value=6 min="0">
+                            <span>%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Years:</td>
+                        <td><input type="text" id="input-401kYears" value=20 min="0"><span>years</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <hr>
+        <div id='calcContainer'>
+            <p class='header'>Results</p>
+            <div id='growthContainer'>
+                <canvas id="growthChart"></canvas>
+                <p class='header'>Annual Growth</p>
+                <table id="growthTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Starting Balance</th>
+                            <th>Contributions (Existing)</th>
+                            <th>Contributions (New)</th>
+                            <th>Returns (Existing)</th>
+                            <th>Returns (New)</th>
+                            <th>Ending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be added dynamically -->
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <hr>
+        <div id='footer'>
+            <p>
+                For educational and demonstration purposes.<br>
+                Accuracy not guaranteed. Please double check all your calculations.<br>
+                This is not to be used as financial advice, and I take no responsibility for how you use this tool.<br>
+                <br>
+                Please send a message if you would like to contribute and help make this tool better.<br>
+            </p>
+            <p><a href="license_gpl-3.0.txt" target="_blank">Copyright Notice</a></p>
+            <!-- <img id='logo' src="images/logos/" alt="Retirement Calculator Logo"> -->
+        </div>
+    </div>
+
+    <script>
+        let chartInstance;
+
+        function bodyOnLoad() {
+            document.getElementById('info').innerHTML = "Please enter your 401K information.";
+            inUpdate();
+        }
+
+        function log(input) {
+            console.log(input);
+        }
+
+        function checkNumber(number) {
+            // Check if the input is a valid number
+            if (isNaN(number)) {
+                return 'Invalid number';
+            }
+            // Ensure it's a number type, in case it's passed as a string
+            number = Number(number);
+            // Limit maximum number to 1e15
+            if (number > 1e15) {
+                return 1e15;
+            }
+            return number;
+        }
+
+        function formatNumberWithCommas(number) {
+            // Check if the input is a valid number
+            number = checkNumber(number);
+            // Format the number with commas
+            return number.toLocaleString('en-US');
+        }
+
+        function formatDollar(number) {
+            // Check if the input is a valid number
+            number = checkNumber(number);
+            // Format the number with commas and 2 decimals
+            number = number.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            // Add $ symbol
+            return '$' + number;
+        }
+
+        function formatDollarShort(number) {
+            // Check if the input is a valid number
+            number = checkNumber(number);
+            // Format the number with commas and no decimals
+            number = number.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            // Add $ symbol
+            return '$' + number;
+        }
+
+        function formatAbbreviatedNumber(number) {
+            // Check if the input is a valid number
+            number = checkNumber(number);
+
+            // Format the number with abbreviations
+            if (number >= 1e13) {
+                return (number / 1e12).toFixed(0) + 'T';  // Format as millions with decimal
+            } else if (number >= 1e12) {
+                return (number / 1e12).toFixed(1) + 'T';  // Format as millions with decimal
+            } else if (number >= 1e10) {
+                return (number / 1e9).toFixed(0) + 'B';  // Format as millions with decimal
+            } else if (number >= 1e9) {
+                return (number / 1e9).toFixed(1) + 'B';  // Format as millions with decimal
+            } else if (number >= 1e7) {
+                return (number / 1e6).toFixed(0) + 'M';  // Format as millions
+            } else if (number >= 1e6) {
+                return (number / 1e6).toFixed(1) + 'M';  // Format as millions with decimal
+            } else if (number >= 1e4) {
+                return (number / 1e3).toFixed(0) + 'K';  // Format as thousands
+            } else if (number >= 1e3) {
+                return (number / 1e3).toFixed(1) + 'K';  // Format as thousands with decimal
+            }
+
+            // Otherwise, return the number as is
+            return number
+        }
+
+        function formatDollarAbbreviated(number) {
+            return '$' + formatAbbreviatedNumber(number);
+        }
+
+        function parseNumberFromString(string) {
+            const cleanedString = string.replace(/,/g, '').trim();
+            const parsed = parseFloat(cleanedString);
+            return isNaN(parsed) ? 0 : parsed; // Returns 0 if invalid number
+        }
+
+        function inUpdate() {
+            log("Calculating...");
+
+            var input_balance = document.getElementById('input-401kBalance').value;
+            var input_contribution = document.getElementById('input-401kContribution').value;
+            var input_rate = document.getElementById('input-401kReturn').value;
+            var input_years = document.getElementById('input-401kYears').value;
+            log("401K Inputs: $" + input_balance + " / $" + input_contribution + " / " + input_rate + "% / " + input_years + " years");
+
+            var balance = parseNumberFromString(input_balance);
+            var contribution = parseNumberFromString(input_contribution);
+            var rate = parseNumberFromString(input_rate);
+            var years = parseNumberFromString(input_years);
+
+            document.getElementById('input-401kBalance').value = formatNumberWithCommas(balance);
+            document.getElementById('input-401kContribution').value = formatNumberWithCommas(contribution);
+            document.getElementById('input-401kReturn').value = formatNumberWithCommas(rate);
+            document.getElementById('input-401kYears').value = formatNumberWithCommas(years);
+
+            updateGrowthTableAndChart(balance, contribution, rate, years);
+        }
+
+        function updateGrowthTableAndChart(balanceStarting, contribution, rate, years) {
+            var growthTableBody = document.getElementById('growthTable').getElementsByTagName('tbody')[0];
+            growthTableBody.innerHTML = ''; // Clear existing rows
+
+            var labels = [];
+            var dataBalanceStarting = [];
+            var dataBalancePrevious = [];
+            var dataContributionTotal = [];
+            var dataContributionNew = [];
+            var dataReturnPrevious = [];
+            var dataReturnNew = [];
+            var dataBalanceEnding = [];
+
+            var currentYear = new Date().getFullYear();
+            var balancePrevious = balanceStarting;
+            var balanceEnding = balanceStarting;
+            var contributionTotal = 0;
+            var returnTotal = 0;
+
+            for (var year = 0; year < years; year++) {
+                // Table
+                var row = growthTableBody.insertRow();
+
+                // Year labels
+                labels.push(currentYear + year);
+                row.insertCell(0).innerText = currentYear + year;
+
+                // Starting balance
+                balancePrevious = balanceEnding;
+                row.insertCell(1).innerText = formatDollar(balancePrevious.toFixed(2));
+                dataBalanceStarting.push(balanceStarting.toFixed(2));  // Fixed initial balance
+                dataBalancePrevious.push(balancePrevious.toFixed(2));
+
+                // Contributions
+                dataContributionTotal.push(contributionTotal.toFixed(2));
+                dataContributionNew.push(contribution.toFixed(2));
+                row.insertCell(2).innerText = formatDollar(contributionTotal.toFixed(2));
+                row.insertCell(3).innerText = formatDollar(contribution.toFixed(2));
+                contributionTotal += contribution;
+
+                // Returns
+                dataReturnPrevious.push(returnTotal.toFixed(2));
+                var returnNew = balancePrevious * (rate / 100);
+                dataReturnNew.push(returnNew.toFixed(2));
+                row.insertCell(4).innerText = formatDollar(returnTotal.toFixed(2));
+                row.insertCell(5).innerText = formatDollar(returnNew.toFixed(2));
+                returnTotal += returnNew;
+
+                // Add to balance
+                balanceEnding += returnNew + contribution;
+                dataBalanceEnding.push(balanceEnding.toFixed(2));
+                row.insertCell(6).innerText = formatDollar(balanceEnding.toFixed(2));
+
+                // Log
+                log("Year " + year + ": " + formatDollarAbbreviated(balanceStarting) + " + " + formatDollarAbbreviated(contribution) + " + " + formatDollarAbbreviated(returnNew) + " = " + formatDollarAbbreviated(balanceEnding));
+            }
+
+            var ctx = document.getElementById('growthChart').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            Chart.register(ChartDataLabels);
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Balance Starting',
+                            data: dataBalanceStarting,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Contributions (Existing)',
+                            data: dataContributionTotal,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Contributions (New)',
+                            data: dataContributionNew,
+                            backgroundColor: 'rgba(54, 206, 235, 0.2)',
+                            borderColor: 'rgba(54, 206, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Returns (Existing)',
+                            data: dataReturnPrevious,
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Returns (New)',
+                            data: dataReturnNew,
+                            backgroundColor: 'rgba(255, 140, 86, 0.2)',
+                            borderColor: 'rgba(255, 140, 86, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Balance Ending',
+                            data: dataBalanceEnding,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            type: 'line',
+                            datalabels: {
+                                display: true,
+                                align: 'end',
+                                anchor: 'end',
+                                formatter: function (value) {
+                                    return formatDollarAbbreviated(value);
+                                }
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Year'
+                            },
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    return index + 1; // Show elapsed years
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                drawOnChartArea: true,
+                                drawTicks: true,
+                                color: function (context) {
+                                    if (context.tick && context.tick.value % 5 === 0) {
+                                        return 'rgba(0, 0, 0, 1)'; // Bold color for every 5 years
+                                    }
+                                    return 'rgba(0, 0, 0, 0.1)'; // Default color
+                                },
+                                lineWidth: function (context) {
+                                    if (context.tick && context.tick.value % 5 === 0) {
+                                        return 1.1; // Bold line for every 5 years
+                                    }
+                                    return 1; // Default line width
+                                }
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Amount ($)'
+                            },
+                            beginAtZero: true,
+                            max: 100000 * Math.round((balanceEnding * 1.2) / 100000, 4) // 20% padding
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    let value = context.raw;
+
+                                    // Format the value
+                                    let formattedValue = formatDollarShort(value);
+                                    // Calculate the padding for the value to right-align it
+                                    let maxLength = 35; // You can adjust this number based on the maximum label width
+                                    let labelLength = label.length + formattedValue.length;
+                                    let paddingLength = maxLength - labelLength > 0 ? maxLength - labelLength : 0;
+
+                                    // Add spaces for right alignment (you can adjust the padding as necessary)
+                                    let paddedValue = ' '.repeat(paddingLength) + formattedValue;
+
+                                    // Combine the label and padded value
+                                    return label + ': ' + paddedValue;
+                                }
+                            },
+                            // Force monospaced font for the tooltips
+                            titleFont: {
+                                family: 'Courier New', // or another monospaced font like 'Consolas'
+                                weight: 'normal',
+                                size: 12
+                            },
+                            bodyFont: {
+                                family: 'Courier New', // Same monospaced font for the body
+                                weight: 'normal',
+                                size: 12
+                            },
+                            footerFont: {
+                                family: 'Courier New', // Same for the footer if needed
+                                weight: 'normal',
+                                size: 12
+                            }
+                        },
+                        datalabels: {
+                            display: false // Disable datalabels globally
+                        }
+                    },
+                    hover: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Event listeners to trigger inUpdate on input changes
+        document.getElementById('input-401kBalance').addEventListener('input', inUpdate);
+        document.getElementById('input-401kContribution').addEventListener('input', inUpdate);
+        document.getElementById('input-401kReturn').addEventListener('input', inUpdate);
+        document.getElementById('input-401kYears').addEventListener('input', inUpdate);
+    </script>
+
+
+</body>
+
+</html>
