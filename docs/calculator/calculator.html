@@ -116,6 +116,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                             <th class="right-align">Returns (Existing)</th>
                             <th class="right-align">Returns (New)</th>
                             <th class="right-align">Ending Balance</th>
+                            <th class="right-align">Difference</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -287,7 +288,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                 dataContributionNew.push(contribution.toFixed(2));
                 row.insertCell(2).innerText = formatDollar(contributionTotal.toFixed(2));
                 row.cells[2].classList.add('right-align');
-                row.insertCell(3).innerText = formatDollar(contribution.toFixed(2));
+                row.insertCell(3).innerText = "+" + formatDollar(contribution.toFixed(2));
                 row.cells[3].classList.add('right-align');
                 contributionTotal += contribution;
 
@@ -297,7 +298,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                 dataReturnNew.push(returnNew.toFixed(2));
                 row.insertCell(4).innerText = formatDollar(returnTotal.toFixed(2));
                 row.cells[4].classList.add('right-align');
-                row.insertCell(5).innerText = formatDollar(returnNew.toFixed(2));
+                row.insertCell(5).innerText = "+" + formatDollar(returnNew.toFixed(2));
                 row.cells[5].classList.add('right-align');
                 returnTotal += returnNew;
 
@@ -306,6 +307,11 @@ This is not to be used as financial advice, and I take no responsibility for how
                 dataBalanceEnding.push(balanceEnding.toFixed(2));
                 row.insertCell(6).innerText = formatDollar(balanceEnding.toFixed(2));
                 row.cells[6].classList.add('right-align');
+
+                // Total change
+                var totalChange = balanceEnding - balancePrevious;
+                row.insertCell(7).innerText = "+" + formatDollar(totalChange.toFixed(2));
+                row.cells[7].classList.add('right-align');
 
                 // Log
                 log("Year " + year + ": " + formatDollarAbbreviated(balanceStarting) + " + " + formatDollarAbbreviated(contribution) + " + " + formatDollarAbbreviated(returnNew) + " = " + formatDollarAbbreviated(balanceEnding));
