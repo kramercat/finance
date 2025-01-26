@@ -43,6 +43,30 @@ This is not to be used as financial advice, and I take no responsibility for how
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .center-align {
+            text-align: center;
+        }
+
+        .right-align {
+            text-align: right;
+        }
+
         table.striped {
             border-collapse: collapse;
             width: 100%;
@@ -81,20 +105,20 @@ This is not to be used as financial advice, and I take no responsibility for how
             <h5>Inputs</h5>
             <div class="row">
                 <div class="input-field col s12 m6">
-                    <input id="input-401kBalance" type="text" value="100,000">
                     <label for="input-401kBalance">Current Balance ($)</label>
+                    <input id="input-401kBalance" type="text" class="form-control" value="100,000">
                 </div>
                 <div class="input-field col s12 m6">
-                    <input id="input-401kContribution" type="text" value="23,500">
                     <label for="input-401kContribution">Annual Contribution ($)</label>
+                    <input id="input-401kContribution" type="text" class="form-control" value="23,500">
                 </div>
                 <div class="input-field col s12 m6">
-                    <input id="input-401kReturn" type="text" value="6">
                     <label for="input-401kReturn">Annual Return (%)</label>
+                    <input id="input-401kReturn" type="text" class="form-control" value="6">
                 </div>
                 <div class="input-field col s12 m6">
-                    <input id="input-401kYears" type="text" value="20">
                     <label for="input-401kYears">Years</label>
+                    <input id="input-401kYears" type="text" class="form-control" value="20">
                 </div>
             </div>
         </div>
@@ -142,229 +166,170 @@ This is not to be used as financial advice, and I take no responsibility for how
     <script>
         let chartInstance;
 
+        // Function to initialize the page and set default message
         function bodyOnLoad() {
             document.getElementById('info').innerHTML = "Please enter your 401K information.";
             inUpdate();
         }
 
+        // Function to log messages to the console
         function log(input) {
             console.log(input);
         }
 
+        // Function to validate and limit number inputs
         function checkNumber(number) {
-            // Check if the input is a valid number
-            if (isNaN(number)) {
-                return 'Invalid number';
-            }
-            // Ensure it's a number type, in case it's passed as a string
+            if (isNaN(number)) return 'Invalid number';
             number = Number(number);
-            // Limit maximum number to 1e15
-            if (number > 1e15) {
-                return 1e15;
-            }
+            return number > 1e15 ? 1e15 : number;
+        }
+
+        // Function to format numbers with commas
+        function formatNumberWithCommas(number) {
+            return checkNumber(number).toLocaleString('en-US');
+        }
+
+        // Function to format numbers as dollars with specified decimals
+        function formatDollar(number, decimals = 2) {
+            return '$' + checkNumber(number).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        // Function to format numbers as dollars without decimals
+        function formatDollarShort(number) {
+            return formatDollar(number, 0);
+        }
+
+        // Function to format numbers with abbreviations (K, M, B, T)
+        function formatAbbreviatedNumber(number) {
+            number = checkNumber(number);
+            if (number >= 1e12) return (number / 1e12).toFixed(number >= 1e13 ? 0 : 1) + 'T';
+            if (number >= 1e9) return (number / 1e9).toFixed(number >= 1e10 ? 0 : 1) + 'B';
+            if (number >= 1e6) return (number / 1e6).toFixed(number >= 1e7 ? 0 : 1) + 'M';
+            if (number >= 1e3) return (number / 1e3).toFixed(number >= 1e4 ? 0 : 1) + 'K';
             return number;
         }
 
-        function formatNumberWithCommas(number) {
-            // Check if the input is a valid number
-            number = checkNumber(number);
-            // Format the number with commas
-            return number.toLocaleString('en-US');
-        }
-
-        function formatDollar(number) {
-            // Check if the input is a valid number
-            number = checkNumber(number);
-            // Format the number with commas and 2 decimals
-            number = number.toLocaleString('en-US', { minimumFractionDigits: 2 });
-            // Add $ symbol
-            return '$' + number;
-        }
-
-        function formatDollarShort(number) {
-            // Check if the input is a valid number
-            number = checkNumber(number);
-            // Format the number with commas and no decimals
-            number = number.toLocaleString('en-US', { maximumFractionDigits: 0 });
-            // Add $ symbol
-            return '$' + number;
-        }
-
-        function formatAbbreviatedNumber(number) {
-            // Check if the input is a valid number
-            number = checkNumber(number);
-
-            // Format the number with abbreviations
-            if (number >= 1e13) {
-                return (number / 1e12).toFixed(0) + 'T';  // Format as millions with decimal
-            } else if (number >= 1e12) {
-                return (number / 1e12).toFixed(1) + 'T';  // Format as millions with decimal
-            } else if (number >= 1e10) {
-                return (number / 1e9).toFixed(0) + 'B';  // Format as millions with decimal
-            } else if (number >= 1e9) {
-                return (number / 1e9).toFixed(1) + 'B';  // Format as millions with decimal
-            } else if (number >= 1e7) {
-                return (number / 1e6).toFixed(0) + 'M';  // Format as millions
-            } else if (number >= 1e6) {
-                return (number / 1e6).toFixed(1) + 'M';  // Format as millions with decimal
-            } else if (number >= 1e4) {
-                return (number / 1e3).toFixed(0) + 'K';  // Format as thousands
-            } else if (number >= 1e3) {
-                return (number / 1e3).toFixed(1) + 'K';  // Format as thousands with decimal
-            }
-
-            // Otherwise, return the number as is
-            return number
-        }
-
+        // Function to format numbers as abbreviated dollars
         function formatDollarAbbreviated(number) {
             return '$' + formatAbbreviatedNumber(number);
         }
 
+        // Function to parse numbers from strings
         function parseNumberFromString(string) {
-            const cleanedString = string.replace(/,/g, '').trim();
-            const parsed = parseFloat(cleanedString);
-            return isNaN(parsed) ? 0 : parsed; // Returns 0 if invalid number
+            const parsed = parseFloat(string.replace(/,/g, '').trim());
+            return isNaN(parsed) ? 0 : parsed;
         }
 
+        // Function to update the inputs and results based on user input
         function inUpdate() {
             log("Calculating...");
 
-            var input_balance = document.getElementById('input-401kBalance').value;
-            var input_contribution = document.getElementById('input-401kContribution').value;
-            var input_rate = document.getElementById('input-401kReturn').value;
-            var input_years = document.getElementById('input-401kYears').value;
-            log("401K Inputs: $" + input_balance + " / $" + input_contribution + " / " + input_rate + "% / " + input_years + " years");
+            const inputs = ['input-401kBalance', 'input-401kContribution', 'input-401kReturn', 'input-401kYears'].map(id => document.getElementById(id).value);
+            log(`401K Inputs: $${inputs[0]} / $${inputs[1]} / ${inputs[2]}% / ${inputs[3]} years`);
 
-            var balance = parseNumberFromString(input_balance);
-            var contribution = parseNumberFromString(input_contribution);
-            var rate = parseNumberFromString(input_rate);
-            var years = parseNumberFromString(input_years);
+            const [balance, contribution, rate, years] = inputs.map(parseNumberFromString);
 
-            document.getElementById('input-401kBalance').value = formatNumberWithCommas(balance);
-            document.getElementById('input-401kContribution').value = formatNumberWithCommas(contribution);
-            document.getElementById('input-401kReturn').value = formatNumberWithCommas(rate);
-            document.getElementById('input-401kYears').value = formatNumberWithCommas(years);
+            ['input-401kBalance', 'input-401kContribution', 'input-401kReturn', 'input-401kYears'].forEach((id, i) => {
+                document.getElementById(id).value = formatNumberWithCommas([balance, contribution, rate, years][i]);
+            });
 
             updateGrowthTableAndChart(balance, contribution, rate, years);
         }
 
+        // Function to set right-align class to table cells
+        function setRightAlign(cells) {
+            cells.forEach(cell => cell.classList.add('right-align'));
+        }
+
+        // Function to update the growth table and chart based on inputs
         function updateGrowthTableAndChart(balanceStarting, contribution, rate, years) {
-            var growthTableBody = document.getElementById('growthTable').getElementsByTagName('tbody')[0];
+            const growthTableBody = document.getElementById('growthTable').getElementsByTagName('tbody')[0];
             growthTableBody.innerHTML = ''; // Clear existing rows
 
-            var labels = [];
-            var dataBalanceStarting = [];
-            var dataBalancePrevious = [];
-            var dataContributionTotal = [];
-            var dataContributionNew = [];
-            var dataReturnPrevious = [];
-            var dataReturnNew = [];
-            var dataBalanceEnding = [];
+            const labels = [];
+            const data = {
+                balanceStarting: [],
+                balancePrevious: [],
+                contributionTotal: [],
+                contributionNew: [],
+                returnPrevious: [],
+                returnNew: [],
+                balanceEnding: []
+            };
 
-            var currentYear = new Date().getFullYear();
-            var balancePrevious = balanceStarting;
-            var balanceEnding = balanceStarting;
-            var contributionTotal = 0;
-            var returnTotal = 0;
+            let currentYear = new Date().getFullYear();
+            let balancePrevious = balanceStarting;
+            let balanceEnding = balanceStarting;
+            let contributionTotal = 0;
+            let returnTotal = 0;
 
-            for (var year = 0; year < years; year++) {
-                // Table
-                var row = growthTableBody.insertRow();
-
-                // Year labels
+            for (let year = 0; year < years; year++) {
+                const row = growthTableBody.insertRow();
                 labels.push(currentYear + year);
                 row.insertCell(0).innerText = currentYear + year;
 
-                // Starting balance
+                // Balance calculations
                 balancePrevious = balanceEnding;
-                row.insertCell(1).innerText = formatDollar(balancePrevious.toFixed(2));
-                row.cells[1].classList.add('right-align');
-                dataBalanceStarting.push(balanceStarting.toFixed(2));  // Fixed initial balance
-                dataBalancePrevious.push(balancePrevious.toFixed(2));
+                data.balanceStarting.push(balanceStarting.toFixed(2));
+                data.balancePrevious.push(balancePrevious.toFixed(2));
 
-                // Contributions
-                dataContributionTotal.push(contributionTotal.toFixed(2));
-                dataContributionNew.push(contribution.toFixed(2));
-                row.insertCell(2).innerText = formatDollar(contributionTotal.toFixed(2));
-                row.cells[2].classList.add('right-align');
-                row.insertCell(3).innerText = "+" + formatDollar(contribution.toFixed(2));
-                row.cells[3].classList.add('right-align');
+                // Contribution calculations
                 contributionTotal += contribution;
+                data.contributionTotal.push(contributionTotal.toFixed(2));
+                data.contributionNew.push(contribution.toFixed(2));
 
-                // Returns
-                dataReturnPrevious.push(returnTotal.toFixed(2));
-                var returnNew = balancePrevious * (rate / 100);
-                dataReturnNew.push(returnNew.toFixed(2));
-                row.insertCell(4).innerText = formatDollar(returnTotal.toFixed(2));
-                row.cells[4].classList.add('right-align');
-                row.insertCell(5).innerText = "+" + formatDollar(returnNew.toFixed(2));
-                row.cells[5].classList.add('right-align');
+                // Return calculations
+                data.returnPrevious.push(returnTotal.toFixed(2));
+                const returnNew = balancePrevious * (rate / 100);
+                data.returnNew.push(returnNew.toFixed(2));
                 returnTotal += returnNew;
 
-                // Add to balance
+                // Ending balance calculations
                 balanceEnding += returnNew + contribution;
-                dataBalanceEnding.push(balanceEnding.toFixed(2));
-                row.insertCell(6).innerText = formatDollar(balanceEnding.toFixed(2));
-                row.cells[6].classList.add('right-align');
+                data.balanceEnding.push(balanceEnding.toFixed(2));
+                const totalChange = balanceEnding - balancePrevious;
 
-                // Total change
-                var totalChange = balanceEnding - balancePrevious;
-                row.insertCell(7).innerText = "+" + formatDollar(totalChange.toFixed(2));
-                row.cells[7].classList.add('right-align');
+                // Log calculations
+                log(`Year ${year}: ${formatDollarAbbreviated(balanceStarting)} + ${formatDollarAbbreviated(contribution)} + ${formatDollarAbbreviated(returnNew)} = ${formatDollarAbbreviated(balanceEnding)}`);
 
-                // Log
-                log("Year " + year + ": " + formatDollarAbbreviated(balanceStarting) + " + " + formatDollarAbbreviated(contribution) + " + " + formatDollarAbbreviated(returnNew) + " = " + formatDollarAbbreviated(balanceEnding));
+                // Add cells to the row
+                const cells = [
+                    row.insertCell(1),
+                    row.insertCell(2),
+                    row.insertCell(3),
+                    row.insertCell(4),
+                    row.insertCell(5),
+                    row.insertCell(6),
+                    row.insertCell(7)
+                ];
+
+                cells[0].innerText = formatDollarShort(balancePrevious.toFixed(2));
+                cells[1].innerText = formatDollarShort(contributionTotal.toFixed(2));
+                cells[2].innerText = "+" + formatDollarShort(contribution.toFixed(2));
+                cells[3].innerText = formatDollarShort(returnTotal.toFixed(2));
+                cells[4].innerText = "+" + formatDollarShort(returnNew.toFixed(2));
+                cells[5].innerText = formatDollarShort(balanceEnding.toFixed(2));
+                cells[6].innerText = "+" + formatDollarShort(totalChange.toFixed(2));
+
+                setRightAlign(cells);
             }
 
-            var ctx = document.getElementById('growthChart').getContext('2d');
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
             Chart.register(ChartDataLabels);
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
-                        {
-                            label: 'Balance Starting',
-                            data: dataBalanceStarting,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Contributions (Existing)',
-                            data: dataContributionTotal,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Contributions (New)',
-                            data: dataContributionNew,
-                            backgroundColor: 'rgba(54, 206, 235, 0.2)',
-                            borderColor: 'rgba(54, 206, 235, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Returns (Existing)',
-                            data: dataReturnPrevious,
-                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Returns (New)',
-                            data: dataReturnNew,
-                            backgroundColor: 'rgba(255, 140, 86, 0.2)',
-                            borderColor: 'rgba(255, 140, 86, 1)',
-                            borderWidth: 1
-                        },
+                        { label: 'Balance Starting', data: data.balanceStarting, backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 },
+                        { label: 'Contributions (Existing)', data: data.contributionTotal, backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 },
+                        { label: 'Contributions (New)', data: data.contributionNew, backgroundColor: 'rgba(54, 206, 235, 0.2)', borderColor: 'rgba(54, 206, 235, 1)', borderWidth: 1 },
+                        { label: 'Returns (Existing)', data: data.returnPrevious, backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', borderWidth: 1 },
+                        { label: 'Returns (New)', data: data.returnNew, backgroundColor: 'rgba(255, 140, 86, 0.2)', borderColor: 'rgba(255, 140, 86, 1)', borderWidth: 1 },
                         {
                             label: 'Balance Ending',
-                            data: dataBalanceEnding,
+                            data: data.balanceEnding,
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 1,
@@ -373,9 +338,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                                 display: true,
                                 align: 'end',
                                 anchor: 'end',
-                                formatter: function (value) {
-                                    return formatDollarAbbreviated(value);
-                                }
+                                formatter: value => formatDollarAbbreviated(value)
                             }
                         }
                     ]
@@ -385,41 +348,21 @@ This is not to be used as financial advice, and I take no responsibility for how
                     scales: {
                         x: {
                             stacked: true,
-                            title: {
-                                display: true,
-                                text: 'Year'
-                            },
-                            ticks: {
-                                callback: function (value, index, values) {
-                                    return index + 1; // Show elapsed years
-                                }
-                            },
+                            title: { display: true, text: 'Year' },
+                            ticks: { callback: (value, index) => index + 1 },
                             grid: {
                                 display: true,
                                 drawOnChartArea: true,
                                 drawTicks: true,
-                                color: function (context) {
-                                    if (context.tick && context.tick.value % 5 === 0) {
-                                        return 'rgba(0, 0, 0, 1)'; // Bold color for every 5 years
-                                    }
-                                    return 'rgba(0, 0, 0, 0.1)'; // Default color
-                                },
-                                lineWidth: function (context) {
-                                    if (context.tick && context.tick.value % 5 === 0) {
-                                        return 1.1; // Bold line for every 5 years
-                                    }
-                                    return 1; // Default line width
-                                }
+                                color: context => context.tick && context.tick.value % 5 === 0 ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.1)',
+                                lineWidth: context => context.tick && context.tick.value % 5 === 0 ? 1.1 : 1
                             }
                         },
                         y: {
                             stacked: true,
-                            title: {
-                                display: true,
-                                text: 'Amount ($)'
-                            },
+                            title: { display: true, text: 'Amount ($)' },
                             beginAtZero: true,
-                            max: 100000 * Math.round((balanceEnding * 1.2) / 100000, 4) // 20% padding
+                            max: 100000 * Math.round((balanceEnding * 1.2) / 100000, 4)
                         }
                     },
                     plugins: {
@@ -427,60 +370,33 @@ This is not to be used as financial advice, and I take no responsibility for how
                             mode: 'index',
                             intersect: false,
                             callbacks: {
-                                label: function (context) {
-                                    let label = context.dataset.label || '';
-                                    let value = context.raw;
-
-                                    // Format the value
-                                    let formattedValue = formatDollarShort(value);
-                                    // Calculate the padding for the value to right-align it
-                                    let maxLength = 35; // You can adjust this number based on the maximum label width
-                                    let labelLength = label.length + formattedValue.length;
-                                    let paddingLength = maxLength - labelLength > 0 ? maxLength - labelLength : 0;
-
-                                    // Add spaces for right alignment (you can adjust the padding as necessary)
-                                    let paddedValue = ' '.repeat(paddingLength) + formattedValue;
-
-                                    // Combine the label and padded value
+                                label: context => {
+                                    const label = context.dataset.label || '';
+                                    const value = context.raw;
+                                    const formattedValue = formatDollarShort(value);
+                                    const maxLength = 35;
+                                    const labelLength = label.length + formattedValue.length;
+                                    const paddingLength = maxLength - labelLength > 0 ? maxLength - labelLength : 0;
+                                    const paddedValue = ' '.repeat(paddingLength) + formattedValue;
                                     return label + ': ' + paddedValue;
                                 }
                             },
-                            // Force monospaced font for the tooltips
-                            titleFont: {
-                                family: 'Courier New', // or another monospaced font like 'Consolas'
-                                weight: 'normal',
-                                size: 12
-                            },
-                            bodyFont: {
-                                family: 'Courier New', // Same monospaced font for the body
-                                weight: 'normal',
-                                size: 12
-                            },
-                            footerFont: {
-                                family: 'Courier New', // Same for the footer if needed
-                                weight: 'normal',
-                                size: 12
-                            }
+                            titleFont: { family: 'Courier New', weight: 'normal', size: 12 },
+                            bodyFont: { family: 'Courier New', weight: 'normal', size: 12 },
+                            footerFont: { family: 'Courier New', weight: 'normal', size: 12 }
                         },
-                        datalabels: {
-                            display: false // Disable datalabels globally
-                        }
+                        datalabels: { display: false }
                     },
-                    hover: {
-                        mode: 'index',
-                        intersect: false
-                    }
+                    hover: { mode: 'index', intersect: false }
                 }
             });
         }
 
-        // Event listeners to trigger inUpdate on input changes
-        document.getElementById('input-401kBalance').addEventListener('input', inUpdate);
-        document.getElementById('input-401kContribution').addEventListener('input', inUpdate);
-        document.getElementById('input-401kReturn').addEventListener('input', inUpdate);
-        document.getElementById('input-401kYears').addEventListener('input', inUpdate);
+        // Add event listeners to input fields to trigger updates on change
+        ['input-401kBalance', 'input-401kContribution', 'input-401kReturn', 'input-401kYears'].forEach(id => {
+            document.getElementById(id).addEventListener('input', inUpdate);
+        });
     </script>
-
 
 </body>
 
