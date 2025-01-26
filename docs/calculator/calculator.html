@@ -89,8 +89,25 @@ This is not to be used as financial advice, and I take no responsibility for how
             text-align: right;
         }
 
+        th.green,
         td.green {
             color: green;
+        }
+
+        div#inputs table {
+            min-width: 40%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        input.form-control {
+            width: 100%;
+            max-width: 100px;
+            padding: 8px;
+            margin: 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
     </style>
 
@@ -107,15 +124,19 @@ This is not to be used as financial advice, and I take no responsibility for how
         </div>
         <hr>
 
-        <div class="section">
+        <div id="inputs" class="section">
             <h2>Inputs</h2>
             <div class="row">
                 <h3>401K Information</h3>
+                <p>This assumes annual compounding and no additional withdrawals.<br>
+                    Returns are calculated after annual contributions.</p>
+                <p>Enter your existing 401K balance, annual contribution, annual return, and number of years to compound
+                    over.</p>
                 <table class="striped">
                     <thead>
                         <tr>
-                            <th>Field</th>
-                            <th>Value</th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -150,7 +171,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                 <table id="growthTable" class="striped">
                     <thead>
                         <tr>
-                            <th>Year</th>
+                            <th></th>
                             <th>Year</th>
                             <th class="right-align">Starting Balance</th>
                             <th class="right-align">Contributions (Existing)</th>
@@ -343,14 +364,16 @@ This is not to be used as financial advice, and I take no responsibility for how
                 contributionTotal += contribution;
                 data.contributionNew.push(contribution.toFixed(2));
                 cells[4].innerText = "+" + formatDollarShort(contribution.toFixed(2));
+                cells[4].classList.add('green');
 
                 // Return calculations
                 data.returnPrevious.push(returnTotal.toFixed(2));
-                const returnNew = balancePrevious * (rate / 100);
+                const returnNew = (balancePrevious + contribution) * (rate / 100); // Add contribution first before calculating return
                 data.returnNew.push(returnNew.toFixed(2));
                 cells[5].innerText = formatDollarShort(returnTotal.toFixed(2));
                 returnTotal += returnNew;
                 cells[6].innerText = "+" + formatDollarShort(returnNew.toFixed(2));
+                cells[6].classList.add('green');
 
                 // Ending balance calculations
                 balanceEnding += returnNew + contribution;
@@ -358,6 +381,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                 const totalChange = balanceEnding - balancePrevious;
                 cells[7].innerText = formatDollarShort(balanceEnding.toFixed(2));
                 cells[8].innerText = "+" + formatDollarShort(totalChange.toFixed(2));
+                cells[8].classList.add('green');
 
                 // Log calculations
                 log(`Year ${year}: ${formatDollarAbbreviated(balanceStarting)} + ${formatDollarAbbreviated(contribution)} + ${formatDollarAbbreviated(returnNew)} = ${formatDollarAbbreviated(balanceEnding)}`);
