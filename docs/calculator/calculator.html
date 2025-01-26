@@ -88,6 +88,10 @@ This is not to be used as financial advice, and I take no responsibility for how
         table.striped td.right-align {
             text-align: right;
         }
+
+        td.green {
+            color: green;
+        }
     </style>
 
 </head>
@@ -150,11 +154,11 @@ This is not to be used as financial advice, and I take no responsibility for how
                             <th>Year</th>
                             <th class="right-align">Starting Balance</th>
                             <th class="right-align">Contributions (Existing)</th>
-                            <th class="right-align">Contributions (New)</th>
+                            <th class="right-align green">Contributions (New)</th>
                             <th class="right-align">Returns (Existing)</th>
-                            <th class="right-align">Returns (New)</th>
+                            <th class="right-align green">Returns (New)</th>
                             <th class="right-align">Ending Balance</th>
-                            <th class="right-align">Difference</th>
+                            <th class="right-align green">Difference</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -255,6 +259,11 @@ This is not to be used as financial advice, and I take no responsibility for how
 
             // Limit max years to 60
             inputs[3] = Math.min(parseNumberFromString(inputs[3]), 60);
+
+            // Limit all values to positive numbers
+            inputs.forEach((input, i) => {
+                inputs[i] = Math.abs(parseNumberFromString(input));
+            });
 
             log(`401K Inputs: $${inputs[0]} / $${inputs[1]} / ${inputs[2]}% / ${inputs[3]} years`);
 
@@ -428,7 +437,8 @@ This is not to be used as financial advice, and I take no responsibility for how
                             },
                             titleFont: { family: 'Courier New', weight: 'normal', size: 12 },
                             bodyFont: { family: 'Courier New', weight: 'normal', size: 12 },
-                            footerFont: { family: 'Courier New', weight: 'normal', size: 12 }
+                            footerFont: { family: 'Courier New', weight: 'normal', size: 12 },
+                            itemSort: (a, b) => b.datasetIndex - a.datasetIndex
                         },
                         datalabels: { display: false }
                     },
