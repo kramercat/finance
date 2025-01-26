@@ -299,33 +299,6 @@ This is not to be used as financial advice, and I take no responsibility for how
 
             // Loop through each year
             for (let year = 0; year < years; year++) {
-                // Add year to labels
-                labels.push(currentYear + year);
-
-                // Balance calculations
-                balancePrevious = balanceEnding;
-                data.balanceStarting.push(balanceStarting.toFixed(2));
-                data.balancePrevious.push(balancePrevious.toFixed(2));
-
-                // Contribution calculations
-                contributionTotal += contribution;
-                data.contributionTotal.push(contributionTotal.toFixed(2));
-                data.contributionNew.push(contribution.toFixed(2));
-
-                // Return calculations
-                data.returnPrevious.push(returnTotal.toFixed(2));
-                const returnNew = balancePrevious * (rate / 100);
-                data.returnNew.push(returnNew.toFixed(2));
-                returnTotal += returnNew;
-
-                // Ending balance calculations
-                balanceEnding += returnNew + contribution;
-                data.balanceEnding.push(balanceEnding.toFixed(2));
-                const totalChange = balanceEnding - balancePrevious;
-
-                // Log calculations
-                log(`Year ${year}: ${formatDollarAbbreviated(balanceStarting)} + ${formatDollarAbbreviated(contribution)} + ${formatDollarAbbreviated(returnNew)} = ${formatDollarAbbreviated(balanceEnding)}`);
-
                 // Add row to table
                 const row = growthTableBody.insertRow();
                 const cells = [
@@ -339,18 +312,47 @@ This is not to be used as financial advice, and I take no responsibility for how
                     row.insertCell(7),
                     row.insertCell(8)
                 ];
+                // Set right-align class to cells
+                setRightAlign(cells);
 
+                // Add year to labels
+                labels.push(currentYear + year);
                 cells[0].innerText = year + 1;
                 cells[1].innerText = currentYear + year;
+
+                // Balance calculations
+                balancePrevious = balanceEnding;
+                data.balanceStarting.push(balanceStarting.toFixed(2));
+                data.balancePrevious.push(balancePrevious.toFixed(2));
                 cells[2].innerText = formatDollarShort(balancePrevious.toFixed(2));
+
+                // Existing contribution
+                data.contributionTotal.push(contributionTotal.toFixed(2));
                 cells[3].innerText = formatDollarShort(contributionTotal.toFixed(2));
+
+                // New contribution calculations
+                contributionTotal += contribution;
+                data.contributionNew.push(contribution.toFixed(2));
                 cells[4].innerText = "+" + formatDollarShort(contribution.toFixed(2));
+
+                // Return calculations
+                data.returnPrevious.push(returnTotal.toFixed(2));
+                const returnNew = balancePrevious * (rate / 100);
+                data.returnNew.push(returnNew.toFixed(2));
                 cells[5].innerText = formatDollarShort(returnTotal.toFixed(2));
+                returnTotal += returnNew;
                 cells[6].innerText = "+" + formatDollarShort(returnNew.toFixed(2));
+
+                // Ending balance calculations
+                balanceEnding += returnNew + contribution;
+                data.balanceEnding.push(balanceEnding.toFixed(2));
+                const totalChange = balanceEnding - balancePrevious;
                 cells[7].innerText = formatDollarShort(balanceEnding.toFixed(2));
                 cells[8].innerText = "+" + formatDollarShort(totalChange.toFixed(2));
 
-                setRightAlign(cells);
+                // Log calculations
+                log(`Year ${year}: ${formatDollarAbbreviated(balanceStarting)} + ${formatDollarAbbreviated(contribution)} + ${formatDollarAbbreviated(returnNew)} = ${formatDollarAbbreviated(balanceEnding)}`);
+
             }
 
             // Add chart to page
@@ -370,8 +372,8 @@ This is not to be used as financial advice, and I take no responsibility for how
                         {
                             label: 'Balance Ending',
                             data: data.balanceEnding,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(104, 192, 0, 0.2)',
+                            borderColor: 'rgba(104, 192, 0, 1)',
                             borderWidth: 1,
                             type: 'line',
                             datalabels: {
@@ -379,7 +381,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                                 align: 'end',
                                 anchor: 'end',
                                 formatter: value => formatDollarAbbreviated(value),
-                                color: 'rgba(255, 99, 132, 1)',
+                                color: 'rgba(104, 192, 0, 1)',
                                 font: { family: 'Roboto Condensed', size: 10, weight: 'bold' }
                             }
                         }
