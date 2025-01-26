@@ -32,101 +32,109 @@ This is not to be used as financial advice, and I take no responsibility for how
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <!-- Bootstrap 4.0 distributed CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!-- Leaflet distributed CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-        crossorigin="" />
-    <!-- Leaflet distributed JS -->
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-        crossorigin=""></script>
+    <!-- Material-UI CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="https://unpkg.com/@mui/material@5.0.0-beta.5/dist/material-ui.min.css" />
+
     <!-- Chart.js distributed JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <!-- Chart.js datalabels plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <!-- Custom stylesheet -->
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        table.striped {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table.striped th,
+        table.striped td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        table.striped th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        table.striped td.right-align {
+            text-align: right;
+        }
+    </style>
 
 </head>
 
 <body onload="bodyOnLoad()">
-    <div id="main">
-        <div id='banner'>
-            <!-- <img id='logo' src="images/logos/" alt="Retirement Calculator Logo"> -->
-            <p class='bannerHeading'>Retirement Calculator</p>
+    <div class="container">
+        <div class="section">
+            <h1 class="center-align">Retirement Calculator</h1>
         </div>
 
-        <div id='instructions'>
-            <p id='info'></p>
+        <div class="section">
+            <p id='info' class="center-align"></p>
         </div>
         <hr>
 
-        <div id='inputsContainer'>
-            <p class='header'>Inputs</p>
-            <div id='401k'>
-                <p class='header'>401K</p>
-                <table>
-                    <tr>
-                        <td>Current Balance:</td>
-                        <td><span>$</span><input type="text" id="input-401kBalance" value=100,000 min="0"></td>
-                    </tr>
-                    <tr>
-                        <td>Annual Contribution:</td>
-                        <td><span>$</span><input type="text" id="input-401kContribution" value=23,500 min="0"></td>
-                    </tr>
-                    <tr>
-                        <td>Annual Return:</td>
-                        <td><input type="text" id="input-401kReturn" value=6 min="0">
-                            <span>%</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Years:</td>
-                        <td><input type="text" id="input-401kYears" value=20 min="0"><span>years</span></td>
-                    </tr>
-                </table>
+        <div class="section">
+            <h5>Inputs</h5>
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    <input id="input-401kBalance" type="text" value="100,000">
+                    <label for="input-401kBalance">Current Balance ($)</label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <input id="input-401kContribution" type="text" value="23,500">
+                    <label for="input-401kContribution">Annual Contribution ($)</label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <input id="input-401kReturn" type="text" value="6">
+                    <label for="input-401kReturn">Annual Return (%)</label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <input id="input-401kYears" type="text" value="20">
+                    <label for="input-401kYears">Years</label>
+                </div>
             </div>
         </div>
         <hr>
-        <div id='calcContainer'>
-            <p class='header'>Results</p>
-            <div id='growthContainer'>
+        <div class="section">
+            <h5>Results</h5>
+            <div class="row">
                 <canvas id="growthChart"></canvas>
-                <p class='header'>Annual Growth</p>
-                <table id="growthTable" class="table table-striped">
+            </div>
+            <div class="row">
+                <h6>Annual Growth</h6>
+                <table id="growthTable" class="striped">
                     <thead>
                         <tr>
                             <th>Year</th>
-                            <th>Starting Balance</th>
-                            <th>Contributions (Existing)</th>
-                            <th>Contributions (New)</th>
-                            <th>Returns (Existing)</th>
-                            <th>Returns (New)</th>
-                            <th>Ending Balance</th>
+                            <th class="right-align">Starting Balance</th>
+                            <th class="right-align">Contributions (Existing)</th>
+                            <th class="right-align">Contributions (New)</th>
+                            <th class="right-align">Returns (Existing)</th>
+                            <th class="right-align">Returns (New)</th>
+                            <th class="right-align">Ending Balance</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Rows will be added dynamically -->
                     </tbody>
                 </table>
-
             </div>
         </div>
 
         <hr>
-        <div id='footer'>
-            <p>
+        <div class="section">
+            <p class="center-align">
                 For educational and demonstration purposes.<br>
                 Accuracy not guaranteed. Please double check all your calculations.<br>
                 This is not to be used as financial advice, and I take no responsibility for how you use this tool.<br>
                 <br>
                 Please send a message if you would like to contribute and help make this tool better.<br>
             </p>
-            <p><a href="license_gpl-3.0.txt" target="_blank">Copyright Notice</a></p>
-            <!-- <img id='logo' src="images/logos/" alt="Retirement Calculator Logo"> -->
+            <p class="center-align"><a href="license_gpl-3.0.txt" target="_blank">Copyright Notice</a></p>
         </div>
     </div>
 
@@ -270,6 +278,7 @@ This is not to be used as financial advice, and I take no responsibility for how
                 // Starting balance
                 balancePrevious = balanceEnding;
                 row.insertCell(1).innerText = formatDollar(balancePrevious.toFixed(2));
+                row.cells[1].classList.add('right-align');
                 dataBalanceStarting.push(balanceStarting.toFixed(2));  // Fixed initial balance
                 dataBalancePrevious.push(balancePrevious.toFixed(2));
 
@@ -277,7 +286,9 @@ This is not to be used as financial advice, and I take no responsibility for how
                 dataContributionTotal.push(contributionTotal.toFixed(2));
                 dataContributionNew.push(contribution.toFixed(2));
                 row.insertCell(2).innerText = formatDollar(contributionTotal.toFixed(2));
+                row.cells[2].classList.add('right-align');
                 row.insertCell(3).innerText = formatDollar(contribution.toFixed(2));
+                row.cells[3].classList.add('right-align');
                 contributionTotal += contribution;
 
                 // Returns
@@ -285,13 +296,16 @@ This is not to be used as financial advice, and I take no responsibility for how
                 var returnNew = balancePrevious * (rate / 100);
                 dataReturnNew.push(returnNew.toFixed(2));
                 row.insertCell(4).innerText = formatDollar(returnTotal.toFixed(2));
+                row.cells[4].classList.add('right-align');
                 row.insertCell(5).innerText = formatDollar(returnNew.toFixed(2));
+                row.cells[5].classList.add('right-align');
                 returnTotal += returnNew;
 
                 // Add to balance
                 balanceEnding += returnNew + contribution;
                 dataBalanceEnding.push(balanceEnding.toFixed(2));
                 row.insertCell(6).innerText = formatDollar(balanceEnding.toFixed(2));
+                row.cells[6].classList.add('right-align');
 
                 // Log
                 log("Year " + year + ": " + formatDollarAbbreviated(balanceStarting) + " + " + formatDollarAbbreviated(contribution) + " + " + formatDollarAbbreviated(returnNew) + " = " + formatDollarAbbreviated(balanceEnding));
