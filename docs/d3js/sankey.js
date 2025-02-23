@@ -15,9 +15,41 @@ function createSankey(data) {
   // Set up the Sankey diagram layout
   const sankey = d3.sankey()
     .nodeWidth(20)
-    .nodePadding(8)
+    .nodePadding(10)
+    .nodeAlign(d3.sankeyRight)
     .extent([[10, 1], [width - 200, height - 2]])
-    .nodeSort((a, b) => a.displayName.localeCompare(b.displayName));  // Sort nodes to minimize crossings
+    //.nodeSort((a, b) => a.displayName.localeCompare(b.displayName));  // Sort nodes to minimize crossings
+    .nodeSort((a, b) => sortLinks(a, b));
+
+  function sortLinks(a, b) {
+    if (a.top) {
+      return -1;
+    } else if (b.top) {
+      return 1;
+    } else if (
+      a.sourceLinks.length == 0 &&
+      b.sourceLinks.length > 0
+    ) {
+      return 1;
+    } else if (
+      b.sourceLinks.length == 0 &&
+      a.sourceLinks.length > 0
+    ) {
+      return -1;
+    } else if (
+      a.targetLinks.length == 0 &&
+      b.targetLinks.length > 0
+    ) {
+      return -1;
+    } else if (
+      b.targetLinks.length == 0 &&
+      a.targetLinks.length > 0
+    ) {
+      return 1;
+    } else {
+      return a.displayName - b.displayName;
+    }
+  }
 
   // Create a map to convert node names to indices
   const nodeMap = {};
