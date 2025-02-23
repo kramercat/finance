@@ -17,7 +17,7 @@ function createSankey(data) {
     .nodeWidth(20)
     .nodePadding(10)
     .nodeAlign(d3.sankeyRight)
-    .extent([[10, 1], [width - 200, height - 2]])
+    .extent([[10, 20], [width - 100, height - 2]])
     .nodeSort((a, b) => sortLinks(a, b));
 
   function sortLinks(a, b) {
@@ -67,7 +67,7 @@ function createSankey(data) {
     links: data.links.map(d => ({
       source: nodeMap[d.source],
       target: nodeMap[d.target],
-      value: d.value || 0,  // Default to 0 if value is not provided
+      value: d.value || 0,
       linkOpacity: .4
     }))
   });
@@ -108,25 +108,6 @@ function createSankey(data) {
     .attr("stop-color", d => nodeColorLookup[d.target.id])
     .attr("stop-opacity", 1);
 
-  // Add gradients for links (flows)
-  svg.append("defs")
-    .selectAll(".gradient")
-    .data(graph.links)
-    .enter().append("linearGradient")
-    //.attr("id", d => `gradient-${d.source}-${d.target}`)
-    .attr("id", d => `gradient`)
-    .attr("gradientUnits", "userSpaceOnUse")
-    .attr("x1", "0%")
-    .attr("y1", "0%")
-    .attr("x2", "100%")
-    .attr("y2", "0%")
-    .append("stop")
-    .attr("offset", "0%")
-    .attr("stop-color", d => nodeColorLookup[d.source.id])  // Use source node color
-    .append("stop")
-    .attr("offset", "100%")
-    .attr("stop-color", d => nodeColorLookup[d.target.id]); // Use target node color
-
   // Add link values
   // svg.append("g")
   //   .selectAll(".link-value")
@@ -162,15 +143,74 @@ function createSankey(data) {
     .attr("y", d => (d.y1 - d.y0) / 2)
     .attr("dy", ".35em")
     .style("text-anchor", "start")
-    .text(d => d.displayName)
+    .each(function (d) {
+      const labelText = d.displayName;
+      const valueText = d.value ? `$${d.value.toLocaleString()}` : '';
+      const fullText = labelText + " " + valueText;
+      wrapText(d3.select(this), fullText);  // Use wrapText to handle the actual wrapping
+    });
 
-  // Add node values
-  node.append("text")
-    .attr("x", textOffset)  // Add some padding to the left
-    .attr("y", d => (d.y1 - d.y0) / 2 + 20)  // Position below the node name
-    .attr("dy", ".35em")
-    .style("text-anchor", "start")
-    .text(d => d.value ? `$${d.value.toLocaleString()}` : '');
+  // Function to wrap text into multiple lines based on a maxWidth
+  function wrapText(
+    textElement, text,
+    maxWidth = 100,
+    font = "11px sans-serif",
+    lineHeight = 20
+  ) {
+    // Break the text into lines
+    const lines = breakTextIntoLines(text, maxWidth, font);
+
+    // Remove the original text content
+    textElement.text(null);
+
+    // Add each line as a tspan, adjusting the vertical position
+    // Vertically center the text based on the number of lines
+    const numLines = lines.length;
+    lines.forEach((line, index) => {
+      textElement.append("tspan")
+        .attr("x", textElement.attr("x"))  // Keep the same x position
+        .attr("y", parseFloat(textElement.attr("y")) + (index - numLines / 2 + 0.5) * lineHeight)  // Adjust the y position
+        .style("font", font)  // Apply the font style
+        .text(line);  // Display the line
+    });
+  }
+
+  // Function to break text into lines (same as the earlier example)
+  function breakTextIntoLines(text, maxWidth, font) {
+    // Split the text into words
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    const testLine = (line) => {
+      // Test the line width
+      const textWidth = svg.append("text").style("font", font).text(line).node().getBBox().width;
+      return textWidth <= maxWidth;
+    };
+
+    words.forEach(word => {
+      // Test the line with the new word
+      const testLineResult = testLine(currentLine + (currentLine ? ' ' : '') + word);
+
+      // Test for wrapping
+      if (word.startsWith("$")) {
+        // Always newline if the word starts with a dollar sign
+        lines.push(currentLine);
+        currentLine = word;
+      } else if (testLineResult) {
+        // Add the word to the current line if it fits
+        currentLine = currentLine ? currentLine + ' ' + word : word;
+      } else {
+        // Start a new line if the word doesn't fit
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    });
+
+    // Add the last line
+    lines.push(currentLine);
+    return lines;
+  }
 }
 
 // Function to update the Sankey diagram with custom values
@@ -181,7 +221,8 @@ function updateSankey() {
   const postTaxContribution = +document.getElementById("401k-contributions-posttax").value;
   const ira = +document.getElementById("ira-traditional").value;
   const taxes = +document.getElementById("taxes").value;
-  const postTaxPay = paycheckAmount - preTaxContribution - taxes
+  const postTaxPay = paycheckAmount - preTaxContribution - taxes;
+  const spending = postTaxPay - postTaxContribution - ira;
 
   d3.json("sankey.json").then(data => {
     // Update the paycheck-related values
@@ -206,12 +247,22 @@ function updateSankey() {
       if (link.target === "ira-roth") {
         link.value = ira;
       }
-      // Calculate remaining paycheck
+      // Calculate remaining spending
       if (link.source === "paycheck-posttax") {
         if (link.target === "401k-contributions-posttax") {
           link.value = postTaxContribution;
-        } else if (link.target === "checking") {
-          link.value = postTaxPay - postTaxContribution - ira;
+        } else if (link.target === "spending") {
+          link.value = spending;
+        }
+      }
+      // Calculate spending categories
+      if (link.source === "spending") {
+        if (link.target === "spending-needs") {
+          link.value = spending * 0.5;
+        } else if (link.target === "spending-wants") {
+          link.value = spending * 0.3;
+        } else if (link.target === "spending-savings") {
+          link.value = spending * 0.2;
         }
       }
       // Calculate total 401k contributions
@@ -231,6 +282,14 @@ function updateSankey() {
         if (link.source === "ira-roth") {
           link.value = ira;
         } else if (link.source === "401k-contributions") {
+          link.value = postTaxContribution;
+        }
+      }
+      // Retirement Funds
+      if (link.target === "funds-retirement") {
+        if (link.source === "funds-401k") {
+          link.value = preTaxContribution + employerMatch;
+        } else if (link.source === "funds-roth") {
           link.value = postTaxContribution;
         }
       }

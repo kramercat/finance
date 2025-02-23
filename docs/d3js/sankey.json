@@ -51,8 +51,28 @@
       "fill": "#78aeef"
     },
     {
-      "id": "checking",
+      "id": "funds-retirement",
+      "displayName": "Funds (Retirement)",
+      "fill": "#fdb133"
+    },
+    {
+      "id": "spending",
       "displayName": "Spending",
+      "fill": "#ab38ac"
+    },
+    {
+      "id": "spending-needs",
+      "displayName": "Needs (50%)",
+      "fill": "#ab38ac"
+    },
+    {
+      "id": "spending-wants",
+      "displayName": "Wants (30%)",
+      "fill": "#ab38ac"
+    },
+    {
+      "id": "spending-savings",
+      "displayName": "Savings (20%)",
       "fill": "#ab38ac"
     },
     {
@@ -80,7 +100,19 @@
     },
     {
       "source": "paycheck-posttax",
-      "target": "checking"
+      "target": "spending"
+    },
+    {
+      "source": "spending",
+      "target": "spending-needs"
+    },
+    {
+      "source": "spending",
+      "target": "spending-wants"
+    },
+    {
+      "source": "spending",
+      "target": "spending-savings"
     },
     {
       "source": "paycheck-posttax",
@@ -113,6 +145,14 @@
     {
       "source": "401k-contributions",
       "target": "funds-roth"
+    },
+    {
+      "source": "funds-401k",
+      "target": "funds-retirement"
+    },
+    {
+      "source": "funds-roth",
+      "target": "funds-retirement"
     }
   ]
 }
