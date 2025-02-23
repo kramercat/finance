@@ -26,24 +26,28 @@
     <h1>Flow of Money from Paycheck to Checking Account</h1>
 
     <div>
-        <label for="paycheckAmount">Paycheck Amount: </label>
-        <input type="number" id="paycheckAmount" value="180000">
-    </div>
-    <div>
-        <label for="401kPretaxContribution">401k Pre-Tax Contribution: </label>
-        <input type="number" id="401kPreTaxContribution" value="23500">
-    </div>
-    <div>
-        <label for="401kEmployerMatch">401k Employer Match: </label>
-        <input type="number" id="401kEmployerMatch" value="11750">
-    </div>
-    <div>
-        <label for="taxes">Taxes: </label>
-        <input type="number" id="taxes" value="40000">
-    </div>
-    <div>
-        <label for="401kPosttaxContribution">401k Post-Tax Contribution: </label>
-        <input type="number" id="401kPostTaxContribution" value="34750">
+        <table>
+            <tr>
+                <td><label for="paycheckAmount">Paycheck Amount: </label></td>
+                <td><input type="number" id="paycheckAmount" value="180000"></td>
+            </tr>
+            <tr>
+                <td><label for="401kPretaxContribution">401k Pre-Tax Contribution: </label></td>
+                <td><input type="number" id="401kPreTaxContribution" value="23500"></td>
+            </tr>
+            <tr>
+                <td><label for="401kEmployerMatch">401k Employer Match: </label></td>
+                <td><input type="number" id="401kEmployerMatch" value="11750"></td>
+            </tr>
+            <tr>
+                <td><label for="taxes">Taxes: </label></td>
+                <td><input type="number" id="taxes" value="40000"></td>
+            </tr>
+            <tr>
+                <td><label for="401kPosttaxContribution">401k Post-Tax Contribution: </label></td>
+                <td><input type="number" id="401kPostTaxContribution" value="34750"></td>
+            </tr>
+        </table>
     </div>
     <div>
         <button onclick="updateSankey()">Update Diagram</button>

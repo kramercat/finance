@@ -61,7 +61,7 @@ function createSankey(data) {
     .attr("y", d => (d.source.y1 + d.target.y0) / 2)
     .attr("dy", ".35em")
     .style("text-anchor", "middle")
-    .text(d => d.value.toLocaleString());
+    .text(d => `$${d.value.toLocaleString()}`);
 
   // Add nodes (elements)
   const node = svg.append("g")
