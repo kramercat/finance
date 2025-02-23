@@ -3,129 +3,116 @@
     {
       "id": "paycheck",
       "displayName": "Paycheck",
-      "rectfill": "lightgreen"
+      "fill": "#56bdcd"
     },
     {
       "id": "401k-contributions-employer",
       "displayName": "401k Employer Match",
-      "rectfill": "#fdb133"
+      "fill": "#fdb133"
     },
     {
       "id": "401k-contributions-pretax",
       "displayName": "401k Pre-Tax Contributions",
-      "rectfill": "#fdb133"
+      "fill": "#fdb133"
     },
     {
       "id": "401k-contributions-posttax",
       "displayName": "401k Post-Tax Contributions",
-      "rectfill": "#fdb133"
+      "fill": "#fdb133"
     },
     {
       "id": "401k-contributions",
       "displayName": "401k Contributions",
-      "rectfill": "#fdb133"
+      "fill": "#fdb133"
     },
     {
       "id": "funds-401k",
       "displayName": "Funds (401k)",
-      "rectfill": "#fdb133"
+      "fill": "#fdb133"
     },
     {
       "id": "ira-traditional",
       "displayName": "Traditional IRA",
-      "rectfill": "#89ae24"
+      "fill": "#89ae24"
     },
     {
       "id": "ira-roth",
       "displayName": "Roth IRA",
-      "rectfill": "#89ae24"
+      "fill": "#89ae24"
     },
     {
       "id": "funds-roth",
       "displayName": "Funds (Roth)",
-      "rectfill": "#89ae24"
+      "fill": "#89ae24"
     },
     {
       "id": "paycheck-posttax",
       "displayName": "Post-Tax Pay",
-      "rectfill": "#78aeef"
+      "fill": "#78aeef"
     },
     {
       "id": "checking",
       "displayName": "Spending",
-      "rectfill": "#ab38ac"
+      "fill": "#ab38ac"
     },
     {
       "id": "taxes",
       "displayName": "Taxes",
-      "rectfill": "#ba1212"
+      "fill": "#ba1212"
     }
   ],
   "links": [
     {
       "source": "paycheck",
-      "target": "401k-contributions-pretax",
-      "linkStroke": "#fdb133"
+      "target": "401k-contributions-pretax"
     },
     {
       "source": "401k-contributions-employer",
-      "target": "401k-contributions",
-      "linkStroke": "#fdb133"
+      "target": "401k-contributions"
     },
     {
       "source": "paycheck",
-      "target": "taxes",
-      "linkStroke": "#ba1212"
+      "target": "taxes"
     },
     {
       "source": "paycheck",
-      "target": "paycheck-posttax",
-      "linkStroke": "#78aeef"
+      "target": "paycheck-posttax"
     },
     {
       "source": "paycheck-posttax",
-      "target": "checking",
-      "linkStroke": "#ab38ac"
+      "target": "checking"
     },
     {
       "source": "paycheck-posttax",
-      "target": "401k-contributions-posttax",
-      "linkStroke": "#fdb133"
+      "target": "401k-contributions-posttax"
     },
     {
       "source": "401k-contributions-pretax",
-      "target": "401k-contributions",
-      "linkStroke": "#fdb133"
+      "target": "401k-contributions"
     },
     {
       "source": "401k-contributions-posttax",
-      "target": "401k-contributions",
-      "linkStroke": "#fdb133"
+      "target": "401k-contributions"
     },
     {
       "source": "401k-contributions",
-      "target": "funds-401k",
-      "linkStroke": "#fdb133"
+      "target": "funds-401k"
     },
     {
       "source": "paycheck-posttax",
-      "target": "ira-traditional",
-      "linkStroke": "#fdb133"
+      "target": "ira-traditional"
     },
     {
       "source": "ira-traditional",
-      "target": "ira-roth",
-      "linkStroke": "#89ae24"
+      "target": "ira-roth"
     },
     {
       "source": "ira-roth",
-      "target": "funds-roth",
-      "linkStroke": "#89ae24"
+      "target": "funds-roth"
     },
     {
       "source": "401k-contributions",
-      "target": "funds-roth",
-      "linkStroke": "#89ae24"
+      "target": "funds-roth"
     }
   ]
 }

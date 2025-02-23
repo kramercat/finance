@@ -26,23 +26,19 @@ function createSankey(data) {
     } else if (b.top) {
       return 1;
     } else if (
-      a.sourceLinks.length == 0 &&
-      b.sourceLinks.length > 0
+      a.sourceLinks.length == 0 && b.sourceLinks.length > 0
     ) {
       return 1;
     } else if (
-      b.sourceLinks.length == 0 &&
-      a.sourceLinks.length > 0
+      b.sourceLinks.length == 0 && a.sourceLinks.length > 0
     ) {
       return -1;
     } else if (
-      a.targetLinks.length == 0 &&
-      b.targetLinks.length > 0
+      a.targetLinks.length == 0 && b.targetLinks.length > 0
     ) {
       return -1;
     } else if (
-      b.targetLinks.length == 0 &&
-      a.targetLinks.length > 0
+      b.targetLinks.length == 0 && a.targetLinks.length > 0
     ) {
       return 1;
     } else {
@@ -50,22 +46,29 @@ function createSankey(data) {
     }
   }
 
-  // Create a map to convert node names to indices
+  // Create a map of node indices and colors
   const nodeMap = {};
+  const nodeColorLookup = {};
   data.nodes.forEach((node, i) => {
     nodeMap[node.id] = i;
+    nodeColorLookup[node.id] = node.fill;
   });
 
   // Convert link source and target names to indices
   const graph = sankey({
-    nodes: data.nodes.map(d => Object.assign({}, d)),
+    nodes: data.nodes.map(d => Object.assign({
+      id: nodeMap[d.id],
+      displayName: d.displayName,
+      fill: d.fill,
+      stroke: d.stroke || d3.color(d.fill).darker(1),
+      strokeWidth: d.strokeWidth || .5,
+      value: d.value || 0
+    }, d)),
     links: data.links.map(d => ({
       source: nodeMap[d.source],
       target: nodeMap[d.target],
       value: d.value || 0,  // Default to 0 if value is not provided
-      linkFill: d.linkFill,
-      linkStroke: d.linkStroke,
-      linkOpacity: d.linkOpacity
+      linkOpacity: .4
     }))
   });
 
@@ -77,9 +80,52 @@ function createSankey(data) {
     .attr("class", "link")
     .attr("d", d3.sankeyLinkHorizontal())
     .style("stroke-width", d => Math.max(1, d.width))
-    .style("fill", d => d.linkFill || "none")
-    .style("stroke", d => d.linkStroke || "#000")
-    .style("stroke-opacity", d => d.linkOpacity || 0.4);
+    .style("fill", "none")
+    //.style("stroke", d => nodeColorLookup[d.target.id] || "#000")  // Use source node color
+    .style("stroke-opacity", d => d.linkOpacity)
+    .style("stroke", d => `url(#gradient-${d.source.id}-${d.target.id})`)
+    //.style("stroke", "url(#svgGradient)")
+    ;
+
+  var defs = svg.append("defs");
+  var gradient = defs
+    .selectAll(".gradient")
+    .data(graph.links)
+    .enter().append("linearGradient")
+    .attr("id", d => `gradient-${d.source.id}-${d.target.id}`)
+    .attr("x1", "0%")
+    .attr("x2", "100%")
+    .attr("y1", "0%")
+    .attr("y2", "0%");
+  gradient.append("stop")
+    .attr("class", "start")
+    .attr("offset", "0%")
+    .attr("stop-color", d => nodeColorLookup[d.source.id])
+    .attr("stop-opacity", 1);
+  gradient.append("stop")
+    .attr("class", "end")
+    .attr("offset", "100%")
+    .attr("stop-color", d => nodeColorLookup[d.target.id])
+    .attr("stop-opacity", 1);
+
+  // Add gradients for links (flows)
+  svg.append("defs")
+    .selectAll(".gradient")
+    .data(graph.links)
+    .enter().append("linearGradient")
+    //.attr("id", d => `gradient-${d.source}-${d.target}`)
+    .attr("id", d => `gradient`)
+    .attr("gradientUnits", "userSpaceOnUse")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "0%")
+    .append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", d => nodeColorLookup[d.source.id])  // Use source node color
+    .append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", d => nodeColorLookup[d.target.id]); // Use target node color
 
   // Add link values
   // svg.append("g")
@@ -105,9 +151,9 @@ function createSankey(data) {
   node.append("rect")
     .attr("height", d => d.y1 - d.y0)
     .attr("width", sankey.nodeWidth())
-    .style("fill", d => d.rectfill || "#ccc")
-    .style("stroke", d => d.rectstroke || "#000")
-    .style("stroke-width", 1);
+    .style("fill", d => d.fill)
+    .style("stroke", d => d.stroke)
+    .style("stroke-width", d => d.strokeWidth);
 
   // Add node names
   const textOffset = sankey.nodeWidth() + 10
@@ -190,6 +236,8 @@ function updateSankey() {
       }
     });
 
+
+
     createSankey(data);
   });
 }
@@ -206,3 +254,4 @@ window.addEventListener("resize", () => {
     createSankey(data);
   });
 });
+
