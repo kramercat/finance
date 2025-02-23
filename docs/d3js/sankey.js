@@ -18,7 +18,6 @@ function createSankey(data) {
     .nodePadding(10)
     .nodeAlign(d3.sankeyRight)
     .extent([[10, 1], [width - 200, height - 2]])
-    //.nodeSort((a, b) => a.displayName.localeCompare(b.displayName));  // Sort nodes to minimize crossings
     .nodeSort((a, b) => sortLinks(a, b));
 
   function sortLinks(a, b) {
