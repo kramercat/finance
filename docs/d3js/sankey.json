@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "name": "401k Employer Match",
+      "rectfill": "lightgreen"
+    },
+    {
+      "name": "Paycheck",
+      "rectfill": "lightgreen"
+    },
+    {
+      "name": "401k Pre-Tax Contributions",
+      "rectfill": "yellow"
+    },
+    {
+      "name": "Post-Tax Pay",
+      "rectfill": "cyan"
+    },
+    {
+      "name": "401k Post-Tax Contributions",
+      "rectfill": "cyan"
+    },
+    {
+      "name": "401k Contributions",
+      "rectfill": "green"
+    },
+    {
+      "name": "Taxes",
+      "rectfill": "red"
+    },
+    {
+      "name": "Checking Account",
+      "rectfill": "purple"
+    }
+  ],
+  "links": [
+    {
+      "source": "Paycheck",
+      "target": "401k Pre-Tax Contributions"
+    },
+    {
+      "source": "401k Employer Match",
+      "target": "401k Pre-Tax Contributions"
+    },
+    {
+      "source": "Paycheck",
+      "target": "Taxes"
+    },
+    {
+      "source": "Paycheck",
+      "target": "Post-Tax Pay"
+    },
+    {
+      "source": "Post-Tax Pay",
+      "target": "401k Post-Tax Contributions",
+      "value": 37500
+    },
+    {
+      "source": "401k Pre-Tax Contributions",
+      "target": "401k Contributions",
+      "value": 23500
+    },
+    {
+      "source": "401k Post-Tax Contributions",
+      "target": "401k Contributions",
+      "value": 37500
+    },
+    {
+      "source": "Post-Tax Pay",
+      "target": "Checking Account"
+    }
+  ]
+}

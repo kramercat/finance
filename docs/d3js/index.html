@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Flow Sankey Diagram</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 0.7em;
+            margin: 20px;
+        }
+
+        .sankey {
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Flow of Money from Paycheck to Checking Account</h1>
+
+    <div>
+        <label for="paycheckAmount">Paycheck Amount: </label>
+        <input type="number" id="paycheckAmount" value="180000">
+    </div>
+    <div>
+        <label for="401kPretaxContribution">401k Pre-Tax Contribution: </label>
+        <input type="number" id="401kPreTaxContribution" value="23500">
+    </div>
+    <div>
+        <label for="401kEmployerMatch">401k Employer Match: </label>
+        <input type="number" id="401kEmployerMatch" value="11750">
+    </div>
+    <div>
+        <label for="taxes">Taxes: </label>
+        <input type="number" id="taxes" value="40000">
+    </div>
+    <div>
+        <label for="401kPosttaxContribution">401k Post-Tax Contribution: </label>
+        <input type="number" id="401kPostTaxContribution" value="34750">
+    </div>
+    <div>
+        <button onclick="updateSankey()">Update Diagram</button>
+    </div>
+    <hr>
+
+    <div class="sankey" id="sankey"></div>
+
+    <script src="sankey.js"></script>
+</body>
+
+</html>
