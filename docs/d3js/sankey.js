@@ -15,7 +15,7 @@ function createSankey(data) {
   // Set up the Sankey diagram layout
   const sankey = d3.sankey()
     .nodeWidth(20)
-    .nodePadding(10)
+    .nodePadding(8)
     .extent([[10, 1], [width - 200, height - 2]])
     .nodeSort((a, b) => a.displayName.localeCompare(b.displayName));  // Sort nodes to minimize crossings
 
@@ -73,7 +73,7 @@ function createSankey(data) {
   // Add node rectangles
   node.append("rect")
     .attr("height", d => d.y1 - d.y0)
-    .attr("width", d => sankey.nodeWidth())
+    .attr("width", sankey.nodeWidth())
     .style("fill", d => d.rectfill || "#ccc")
     .style("stroke", d => d.rectstroke || "#000")
     .style("stroke-width", 1);
@@ -98,11 +98,12 @@ function createSankey(data) {
 
 // Function to update the Sankey diagram with custom values
 function updateSankey() {
-  const paycheckAmount = +document.getElementById("paycheckAmount").value;
-  const preTaxContribution = +document.getElementById("401kPreTaxContribution").value;
-  const employerMatch = +document.getElementById("401kEmployerMatch").value;
+  const paycheckAmount = +document.getElementById("paycheck-amount").value;
+  const preTaxContribution = +document.getElementById("401k-contributions-pretax").value;
+  const employerMatch = +document.getElementById("401k-contributions-employer").value;
+  const postTaxContribution = +document.getElementById("401k-contributions-posttax").value;
+  const ira = +document.getElementById("ira-traditional").value;
   const taxes = +document.getElementById("taxes").value;
-  const postTaxContribution = +document.getElementById("401kPostTaxContribution").value;
   const postTaxPay = paycheckAmount - preTaxContribution - taxes
 
   d3.json("sankey.json").then(data => {
@@ -121,12 +122,19 @@ function updateSankey() {
           link.value = postTaxPay;
         }
       }
+      // IRA stuff
+      if (link.target === "ira-traditional") {
+        link.value = ira;
+      }
+      if (link.target === "ira-roth") {
+        link.value = ira;
+      }
       // Calculate remaining paycheck
       if (link.source === "paycheck-posttax") {
         if (link.target === "401k-contributions-posttax") {
           link.value = postTaxContribution;
         } else if (link.target === "checking") {
-          link.value = postTaxPay - postTaxContribution;
+          link.value = postTaxPay - postTaxContribution - ira;
         }
       }
       // Calculate total 401k contributions
@@ -134,6 +142,18 @@ function updateSankey() {
         if (link.source === "401k-contributions-pretax") {
           link.value = preTaxContribution;
         } else if (link.source === "401k-contributions-posttax") {
+          link.value = postTaxContribution;
+        }
+      }
+      // 401k Funds
+      if (link.target === "funds-401k") {
+        link.value = preTaxContribution + employerMatch;
+      }
+      // IRA Funds
+      if (link.target === "funds-roth") {
+        if (link.source === "ira-roth") {
+          link.value = ira;
+        } else if (link.source === "401k-contributions") {
           link.value = postTaxContribution;
         }
       }

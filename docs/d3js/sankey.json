@@ -1,24 +1,19 @@
 {
   "nodes": [
     {
-      "id": "401k-contributions-employer",
-      "displayName": "401k Employer Match",
-      "rectfill": "#fdb133"
-    },
-    {
       "id": "paycheck",
       "displayName": "Paycheck",
       "rectfill": "lightgreen"
     },
     {
-      "id": "401k-contributions-pretax",
-      "displayName": "401k Pre-Tax Contributions",
+      "id": "401k-contributions-employer",
+      "displayName": "401k Employer Match",
       "rectfill": "#fdb133"
     },
     {
-      "id": "paycheck-posttax",
-      "displayName": "Post-Tax Pay",
-      "rectfill": "cyan"
+      "id": "401k-contributions-pretax",
+      "displayName": "401k Pre-Tax Contributions",
+      "rectfill": "#fdb133"
     },
     {
       "id": "401k-contributions-posttax",
@@ -31,14 +26,39 @@
       "rectfill": "#fdb133"
     },
     {
-      "id": "taxes",
-      "displayName": "Taxes",
-      "rectfill": "#ba1212"
+      "id": "funds-401k",
+      "displayName": "Funds (401k)",
+      "rectfill": "#fdb133"
+    },
+    {
+      "id": "ira-traditional",
+      "displayName": "Traditional IRA",
+      "rectfill": "#89ae24"
+    },
+    {
+      "id": "ira-roth",
+      "displayName": "Roth IRA",
+      "rectfill": "#89ae24"
+    },
+    {
+      "id": "funds-roth",
+      "displayName": "Funds (Roth)",
+      "rectfill": "#89ae24"
+    },
+    {
+      "id": "paycheck-posttax",
+      "displayName": "Post-Tax Pay",
+      "rectfill": "#78aeef"
     },
     {
       "id": "checking",
-      "displayName": "Checking Account",
-      "rectfill": "purple"
+      "displayName": "Spending",
+      "rectfill": "#ab38ac"
+    },
+    {
+      "id": "taxes",
+      "displayName": "Taxes",
+      "rectfill": "#ba1212"
     }
   ],
   "links": [
@@ -60,12 +80,17 @@
     {
       "source": "paycheck",
       "target": "paycheck-posttax",
-      "linkStroke": "darkcyan"
+      "linkStroke": "#78aeef"
+    },
+    {
+      "source": "paycheck-posttax",
+      "target": "checking",
+      "linkStroke": "#ab38ac"
     },
     {
       "source": "paycheck-posttax",
       "target": "401k-contributions-posttax",
-      "value": 37500
+      "linkStroke": "#fdb133"
     },
     {
       "source": "401k-contributions-pretax",
@@ -78,8 +103,29 @@
       "linkStroke": "#fdb133"
     },
     {
+      "source": "401k-contributions",
+      "target": "funds-401k",
+      "linkStroke": "#fdb133"
+    },
+    {
       "source": "paycheck-posttax",
-      "target": "checking"
+      "target": "ira-traditional",
+      "linkStroke": "#fdb133"
+    },
+    {
+      "source": "ira-traditional",
+      "target": "ira-roth",
+      "linkStroke": "#89ae24"
+    },
+    {
+      "source": "ira-roth",
+      "target": "funds-roth",
+      "linkStroke": "#89ae24"
+    },
+    {
+      "source": "401k-contributions",
+      "target": "funds-roth",
+      "linkStroke": "#89ae24"
     }
   ]
 }
