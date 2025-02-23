@@ -215,28 +215,30 @@ function createSankey(data) {
 
 // Function to update the Sankey diagram with custom values
 function updateSankey() {
-  const paycheckAmount = +document.getElementById("paycheck-amount").value;
+  const incomeAmount = +document.getElementById("income-amount").value;
   const preTaxContribution = +document.getElementById("401k-contributions-pretax").value;
   const employerMatch = +document.getElementById("401k-contributions-employer").value;
   const postTaxContribution = +document.getElementById("401k-contributions-posttax").value;
   const ira = +document.getElementById("ira-traditional").value;
   const taxes = +document.getElementById("taxes").value;
-  const postTaxPay = paycheckAmount - preTaxContribution - taxes;
+  const postTaxPay = incomeAmount - preTaxContribution - taxes;
   const spending = postTaxPay - postTaxContribution - ira;
+  const funds401k = preTaxContribution + employerMatch;
+  const fundsRoth = postTaxContribution + ira;
 
   d3.json("sankey.json").then(data => {
-    // Update the paycheck-related values
+    // Update the income-related values
     data.links.forEach(link => {
       // Intake settings
       if (link.source === "401k-contributions-employer") {
         link.value = employerMatch;
       }
-      if (link.source === "paycheck") {
+      if (link.source === "income") {
         if (link.target === "401k-contributions-pretax") {
           link.value = preTaxContribution;
         } else if (link.target === "taxes") {
           link.value = taxes;
-        } else if (link.target === "paycheck-posttax") {
+        } else if (link.target === "income-posttax") {
           link.value = postTaxPay;
         }
       }
@@ -248,7 +250,7 @@ function updateSankey() {
         link.value = ira;
       }
       // Calculate remaining spending
-      if (link.source === "paycheck-posttax") {
+      if (link.source === "income-posttax") {
         if (link.target === "401k-contributions-posttax") {
           link.value = postTaxContribution;
         } else if (link.target === "spending") {
@@ -275,7 +277,7 @@ function updateSankey() {
       }
       // 401k Funds
       if (link.target === "funds-401k") {
-        link.value = preTaxContribution + employerMatch;
+        link.value = funds401k;
       }
       // IRA Funds
       if (link.target === "funds-roth") {
@@ -288,9 +290,9 @@ function updateSankey() {
       // Retirement Funds
       if (link.target === "funds-retirement") {
         if (link.source === "funds-401k") {
-          link.value = preTaxContribution + employerMatch;
+          link.value = funds401k;
         } else if (link.source === "funds-roth") {
-          link.value = postTaxContribution;
+          link.value = fundsRoth;
         }
       }
     });

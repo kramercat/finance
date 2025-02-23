@@ -1,8 +1,8 @@
 {
   "nodes": [
     {
-      "id": "paycheck",
-      "displayName": "Paycheck",
+      "id": "income",
+      "displayName": "Income",
       "fill": "#56bdcd"
     },
     {
@@ -46,7 +46,7 @@
       "fill": "#89ae24"
     },
     {
-      "id": "paycheck-posttax",
+      "id": "income-posttax",
       "displayName": "Post-Tax Pay",
       "fill": "#78aeef"
     },
@@ -63,12 +63,12 @@
     {
       "id": "spending-needs",
       "displayName": "Needs (50%)",
-      "fill": "#ab38ac"
+      "fill": "#ba1212"
     },
     {
       "id": "spending-wants",
       "displayName": "Wants (30%)",
-      "fill": "#ab38ac"
+      "fill": "#ba1212"
     },
     {
       "id": "spending-savings",
@@ -83,7 +83,7 @@
   ],
   "links": [
     {
-      "source": "paycheck",
+      "source": "income",
       "target": "401k-contributions-pretax"
     },
     {
@@ -91,15 +91,15 @@
       "target": "401k-contributions"
     },
     {
-      "source": "paycheck",
+      "source": "income",
       "target": "taxes"
     },
     {
-      "source": "paycheck",
-      "target": "paycheck-posttax"
+      "source": "income",
+      "target": "income-posttax"
     },
     {
-      "source": "paycheck-posttax",
+      "source": "income-posttax",
       "target": "spending"
     },
     {
@@ -115,7 +115,7 @@
       "target": "spending-savings"
     },
     {
-      "source": "paycheck-posttax",
+      "source": "income-posttax",
       "target": "401k-contributions-posttax"
     },
     {
@@ -131,7 +131,7 @@
       "target": "funds-401k"
     },
     {
-      "source": "paycheck-posttax",
+      "source": "income-posttax",
       "target": "ira-traditional"
     },
     {
