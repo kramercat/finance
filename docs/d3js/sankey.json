@@ -1,73 +1,85 @@
 {
   "nodes": [
     {
-      "name": "401k Employer Match",
+      "id": "401k-contributions-employer",
+      "displayName": "401k Employer Match",
+      "rectfill": "#fdb133"
+    },
+    {
+      "id": "paycheck",
+      "displayName": "Paycheck",
       "rectfill": "lightgreen"
     },
     {
-      "name": "Paycheck",
-      "rectfill": "lightgreen"
+      "id": "401k-contributions-pretax",
+      "displayName": "401k Pre-Tax Contributions",
+      "rectfill": "#fdb133"
     },
     {
-      "name": "401k Pre-Tax Contributions",
-      "rectfill": "yellow"
-    },
-    {
-      "name": "Post-Tax Pay",
+      "id": "paycheck-posttax",
+      "displayName": "Post-Tax Pay",
       "rectfill": "cyan"
     },
     {
-      "name": "401k Post-Tax Contributions",
-      "rectfill": "cyan"
+      "id": "401k-contributions-posttax",
+      "displayName": "401k Post-Tax Contributions",
+      "rectfill": "#fdb133"
     },
     {
-      "name": "401k Contributions",
-      "rectfill": "green"
+      "id": "401k-contributions",
+      "displayName": "401k Contributions",
+      "rectfill": "#fdb133"
     },
     {
-      "name": "Taxes",
-      "rectfill": "red"
+      "id": "taxes",
+      "displayName": "Taxes",
+      "rectfill": "#ba1212"
     },
     {
-      "name": "Checking Account",
+      "id": "checking",
+      "displayName": "Checking Account",
       "rectfill": "purple"
     }
   ],
   "links": [
     {
-      "source": "Paycheck",
-      "target": "401k Pre-Tax Contributions"
+      "source": "paycheck",
+      "target": "401k-contributions-pretax",
+      "linkStroke": "#fdb133"
     },
     {
-      "source": "401k Employer Match",
-      "target": "401k Pre-Tax Contributions"
+      "source": "401k-contributions-employer",
+      "target": "401k-contributions",
+      "linkStroke": "#fdb133"
     },
     {
-      "source": "Paycheck",
-      "target": "Taxes"
+      "source": "paycheck",
+      "target": "taxes",
+      "linkStroke": "#ba1212"
     },
     {
-      "source": "Paycheck",
-      "target": "Post-Tax Pay"
+      "source": "paycheck",
+      "target": "paycheck-posttax",
+      "linkStroke": "darkcyan"
     },
     {
-      "source": "Post-Tax Pay",
-      "target": "401k Post-Tax Contributions",
+      "source": "paycheck-posttax",
+      "target": "401k-contributions-posttax",
       "value": 37500
     },
     {
-      "source": "401k Pre-Tax Contributions",
-      "target": "401k Contributions",
-      "value": 23500
+      "source": "401k-contributions-pretax",
+      "target": "401k-contributions",
+      "linkStroke": "#fdb133"
     },
     {
-      "source": "401k Post-Tax Contributions",
-      "target": "401k Contributions",
-      "value": 37500
+      "source": "401k-contributions-posttax",
+      "target": "401k-contributions",
+      "linkStroke": "#fdb133"
     },
     {
-      "source": "Post-Tax Pay",
-      "target": "Checking Account"
+      "source": "paycheck-posttax",
+      "target": "checking"
     }
   ]
 }
