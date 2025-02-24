@@ -138,9 +138,41 @@ function createSankey(data) {
   node.append("rect")
     .attr("height", d => d.y1 - d.y0)
     .attr("width", sankey.nodeWidth())
-    .style("fill", d => d.fill)
+    .style("fill", d => {
+      if (d.pattern === "striped") {
+        return `url(#pattern-${d.id})`;
+      }
+      return d.fill;
+    })
     .style("stroke", d => d.stroke)
     .style("stroke-width", d => d.strokeWidth);
+
+  // Define striped patterns for specific nodes
+  stripeWidth = 1
+  stripeSpacing = 8
+  stripeColor = "#f33"
+  const nodePatterns = svg.append("defs")
+    .selectAll(".node-pattern")
+    .data(graph.nodes.filter(d => d.pattern === "striped"))
+    .enter().append("pattern")
+    .attr("id", d => `pattern-${d.id}`)
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("width", stripeWidth)
+    .attr("height", stripeSpacing)
+    .attr("patternTransform", "rotate(45)");
+
+  nodePatterns.append("rect")
+    .attr("width", stripeWidth)
+    .attr("height", stripeSpacing)
+    .attr("fill", d => d.fill);
+
+  nodePatterns.append("line")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", stripeWidth)
+    .attr("y2", 0)
+    .attr("stroke", stripeColor)
+    .attr("stroke-width", stripeWidth);
 
   // Add node names
   const textOffset = 15
