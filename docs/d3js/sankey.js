@@ -4,8 +4,8 @@ function createSankey(data) {
   d3.select("#sankey").selectAll("svg").remove();
 
   // Get the current window dimensions
-  const width = window.innerWidth * 0.9;  // Use 90% of the window width
-  const height = window.innerHeight * 0.8;  // Use 80% of the window height
+  const width = window.innerWidth;
+  const height = window.innerHeight * 0.8;
 
   // Create the Sankey diagram
   const svg = d3.select("#sankey").append("svg")
@@ -15,11 +15,11 @@ function createSankey(data) {
   // Set up the Sankey diagram layout
   const sankey = d3.sankey()
     .nodeWidth(40)
-    .nodePadding(20)
+    .nodePadding(10)
     .nodeAlign(d => d.level)
     .extent([[10, 20], [width - 100, height - 100]])
     //.nodeSort((a, b) => sortLinks(a, b))
-    .nodeSort((a, b) => a.level - b.level || a.order - b.order);
+    .nodeSort((a, b) => a.order - b.order);
 
   function sortLinks(a, b) {
     if (a.top) {
@@ -143,10 +143,10 @@ function createSankey(data) {
     .style("stroke-width", d => d.strokeWidth);
 
   // Add node names
-  const textOffset = sankey.nodeWidth() + 10
+  const textOffset = 15
   node.append("text")
     .attr("x", d => (d.y0 - d.y1) / 2)  // Center the text vertically
-    .attr("y", 20)
+    .attr("y", sankey.nodeWidth() / 2)
     .attr("dy", ".35em")
     .attr("transform", "rotate(-90)")
     .style("text-anchor", "middle")
@@ -155,15 +155,13 @@ function createSankey(data) {
       const labelText = d.displayName;
       const valueText = d.value ? `$${d.value.toLocaleString()}` : '';
       const fullText = labelText + " " + valueText;
-      wrapText(d3.select(this), fullText);  // Use wrapText to handle the actual wrapping
+      wrapText(d3.select(this), fullText, d.value / 400, textOffset);  // Use wrapText to handle the actual wrapping
     });
 
   // Function to wrap text into multiple lines based on a maxWidth
   function wrapText(
-    textElement, text,
-    maxWidth = 50,
-    font = "8px sans-serif",
-    lineHeight = 15
+    textElement, text, maxWidth, lineHeight,
+    font = "8px sans-serif"
   ) {
     // Break the text into lines
     const lines = breakTextIntoLines(text, maxWidth, font);
@@ -200,14 +198,13 @@ function createSankey(data) {
       // Test the line with the new word
       const testLineResult = testLine(currentLine + (currentLine ? ' ' : '') + word);
 
-      // Test for wrapping
-      if (testLineResult) {
-        // Add the word to the current line if it fits
-        currentLine = currentLine ? currentLine + ' ' + word : word;
-      } else {
+      if (!testLineResult || word.startsWith("$")) {
         // Start a new line if the word doesn't fit
         lines.push(currentLine);
         currentLine = word;
+      } else {
+        // Add the word to the current line if it fits
+        currentLine = currentLine ? currentLine + ' ' + word : word;
       }
     });
 
@@ -217,34 +214,71 @@ function createSankey(data) {
   }
 }
 
+// Function to calculate taxes based on income and tax brackets
+function calculateTaxes(income) {
+  const brackets = [
+    { rate: 0.10, threshold: 11600 },
+    { rate: 0.12, threshold: 47150 },
+    { rate: 0.22, threshold: 100525 },
+    { rate: 0.24, threshold: 191950 },
+    { rate: 0.32, threshold: 243725 },
+    { rate: 0.35, threshold: 609350 },
+    { rate: 0.37, threshold: Infinity }
+  ];
+
+  let taxes = 0;
+  let previousThreshold = 0;
+
+  for (const bracket of brackets) {
+    if (income > bracket.threshold) {
+      taxes += (bracket.threshold - previousThreshold) * bracket.rate;
+      previousThreshold = bracket.threshold;
+    } else {
+      taxes += (income - previousThreshold) * bracket.rate;
+      break;
+    }
+  }
+
+  return taxes;
+}
+
 // Function to update the Sankey diagram with custom values
 function updateSankey() {
+  // Income & pretax elections
   const incomeAmount = +document.getElementById("income-amount").value;
-  const preTaxContribution = +document.getElementById("401k-contributions-pretax").value;
-  const employerMatch = +document.getElementById("401k-contributions-employer").value;
-  const postTaxContribution = +document.getElementById("401k-contributions-posttax").value;
+  const taxDeductions = +document.getElementById("tax-deductions").value;
+  const contribution401kPreTax = +document.getElementById("401k-contributions-pretax").value;
+  // Tax calculations
+  const taxableIncome = incomeAmount - taxDeductions - contribution401kPreTax;
+  const taxes = calculateTaxes(taxableIncome);
+  // Calculate and show effective tax rate
+  const taxRateEffective = taxes / taxableIncome;
+  document.getElementById("tax-rate").value = (taxRateEffective * 100).toFixed(2) + "%";
+
+  // Employer match
+  const contibution401kEmployer = +document.getElementById("401k-contributions-employer").value;
+  // Post tax elections
+  const contribution401kPostTax = +document.getElementById("401k-contributions-posttax").value;
   const ira = +document.getElementById("ira-traditional").value;
-  const taxes = +document.getElementById("taxes").value;
-  const postTaxPay = incomeAmount - preTaxContribution - taxes;
-  const spending = postTaxPay - postTaxContribution - ira;
-  const funds401k = preTaxContribution + employerMatch;
-  const fundsRoth = postTaxContribution + ira;
-  const taxRate401k = 0.2;
+  // Net income
+  const netIncome = taxableIncome - taxes;
+  const remainingIncome = netIncome - contribution401kPostTax - ira;
+
+  // Retirement calculations
+  const funds401k = contribution401kPreTax + contibution401kEmployer;
+  const fundsRoth = contribution401kPostTax + ira;
 
   d3.json("sankey.json").then(data => {
     // Update the income-related values
     data.links.forEach(link => {
       // Intake settings
-      if (link.source === "401k-contributions-employer") {
-        link.value = employerMatch;
-      }
       if (link.source === "income") {
-        if (link.target === "401k-contributions-pretax") {
-          link.value = preTaxContribution;
-        } else if (link.target === "taxes") {
-          link.value = taxes;
-        } else if (link.target === "income-posttax") {
-          link.value = postTaxPay;
+        if (link.target === "tax-deductions") {
+          link.value = taxDeductions;
+        } else if (link.target === "401k-contributions-pretax") {
+          link.value = contribution401kPreTax;
+        } else if (link.target === "income-taxable") {
+          link.value = taxableIncome;
         }
       }
       // IRA stuff
@@ -254,56 +288,61 @@ function updateSankey() {
       if (link.target === "ira-roth") {
         link.value = ira;
       }
-      // Calculate remaining spending
-      if (link.source === "income-posttax") {
-        if (link.target === "401k-contributions-posttax") {
-          link.value = postTaxContribution;
-        } else if (link.target === "spending") {
-          link.value = spending;
+      // Calculate net income
+      if (link.source === "income-taxable") {
+        if (link.target === "taxes") {
+          link.value = taxes;
+        } else if (link.target === "income-net") {
+          link.value = netIncome;
         }
       }
       // Calculate spending categories
-      if (link.source === "spending") {
-        if (link.target === "spending-needs") {
-          link.value = spending * 0.5;
+      if (link.source === "income-net") {
+        if (link.target === "401k-contributions-posttax") {
+          link.value = contribution401kPostTax;
+        } else if (link.target === "spending-needs") {
+          link.value = remainingIncome * 0.5;
         } else if (link.target === "spending-wants") {
-          link.value = spending * 0.3;
+          link.value = remainingIncome * 0.3;
         } else if (link.target === "spending-savings") {
-          link.value = spending * 0.2;
+          link.value = remainingIncome * 0.2;
         }
       }
       // Calculate total 401k contributions
+      if (link.source === "401k-contributions-employer") {
+        link.value = contibution401kEmployer;
+      }
       if (link.target === "401k-contributions") {
         if (link.source === "401k-contributions-pretax") {
-          link.value = preTaxContribution;
+          link.value = contribution401kPreTax;
         } else if (link.source === "401k-contributions-posttax") {
-          link.value = postTaxContribution;
+          link.value = contribution401kPostTax;
         }
       }
       // 401k Funds
       if (link.target === "funds-401k") {
         link.value = funds401k;
       }
-      if (link.source === "funds-401k") {
-        if (link.target === "taxes-401k") {
-          link.value = funds401k * taxRate401k;
-        }
-      }
       // IRA Funds
       if (link.target === "funds-roth") {
         if (link.source === "ira-roth") {
           link.value = ira;
         } else if (link.source === "401k-contributions") {
-          link.value = postTaxContribution;
+          link.value = contribution401kPostTax;
         }
       }
       // Retirement Funds
       if (link.target === "funds-retirement") {
         if (link.source === "funds-401k") {
-          link.value = funds401k * (1 - taxRate401k);
+          link.value = funds401k;
         } else if (link.source === "funds-roth") {
           link.value = fundsRoth;
         }
+      }
+      if (link.target === "funds-retirement-tax-exempt") {
+        link.value = fundsRoth;
+      } else if (link.target === "funds-retirement-taxable") {
+        link.value = funds401k;
       }
     });
 

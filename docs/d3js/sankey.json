@@ -3,58 +3,37 @@
     {
       "id": "income",
       "displayName": "Income",
-      "fill": "#56bdcd",
+      "fill": "#ae89ef",
       "level": 0,
       "order": 1
     },
     {
-      "id": "taxes",
-      "displayName": "Taxes",
+      "id": "tax-deductions",
+      "displayName": "Tax Deductions",
       "fill": "#de6756",
       "level": 1,
       "order": 1
     },
     {
-      "id": "income-posttax",
-      "displayName": "Post-Tax Pay",
+      "id": "income-taxable",
+      "displayName": "Taxable Income",
       "fill": "#78aeef",
       "level": 1,
       "order": 2
     },
     {
-      "id": "401k-contributions-pretax",
-      "displayName": "401k Pre-Tax Contributions",
-      "fill": "#eb5",
-      "level": 1,
-      "order": 3
-    },
-    {
-      "id": "401k-contributions-employer",
-      "displayName": "401k Employer Match",
-      "fill": "#eb5",
-      "level": 1,
-      "order": 7
-    },
-    {
-      "id": "spending",
-      "displayName": "Spending",
-      "fill": "#ae89ef",
+      "id": "taxes",
+      "displayName": "Taxes",
+      "fill": "#de6756",
       "level": 2,
       "order": 1
     },
     {
-      "id": "ira-traditional",
-      "displayName": "Traditional IRA",
-      "fill": "#89ae56",
+      "id": "income-net",
+      "displayName": "Net Income",
+      "fill": "#56bdcd",
       "level": 2,
       "order": 2
-    },
-    {
-      "id": "401k-contributions-posttax",
-      "displayName": "401k Post-Tax Contributions",
-      "fill": "#89ae56",
-      "level": 2,
-      "order": 3
     },
     {
       "id": "spending-needs",
@@ -67,50 +46,71 @@
       "id": "spending-wants",
       "displayName": "Wants (30%)",
       "fill": "#de6756",
-      "level": 4,
-      "order": 1
+      "level": 3,
+      "order": 2
     },
     {
       "id": "spending-savings",
       "displayName": "Savings (20%)",
       "fill": "#89ae56",
-      "level": 6,
-      "order": 5
+      "level": 3,
+      "order": 3
     },
     {
-      "id": "401k-contributions",
-      "displayName": "401k Contributions",
-      "fill": "#eb5",
+      "id": "ira-traditional",
+      "displayName": "Trad IRA",
+      "fill": "#89ae56",
+      "level": 3,
+      "order": 4
+    },
+    {
+      "id": "401k-contributions-posttax",
+      "displayName": "401k Post-Tax Contributions",
+      "fill": "#89ae56",
       "level": 3,
       "order": 5
     },
     {
-      "id": "funds-401k",
-      "displayName": "Funds (401k)",
+      "id": "401k-contributions-pretax",
+      "displayName": "401k Pre-Tax Contributions",
       "fill": "#eb5",
-      "level": 4,
-      "order": 4
+      "level": 3,
+      "order": 6
+    },
+    {
+      "id": "401k-contributions-employer",
+      "displayName": "401k Employer Match",
+      "fill": "#eb5",
+      "level": 3,
+      "order": 7
     },
     {
       "id": "ira-roth",
       "displayName": "Roth IRA",
       "fill": "#89ae56",
-      "level": 3,
+      "level": 4,
+      "order": 1
+    },
+    {
+      "id": "401k-contributions",
+      "displayName": "401k Contributions",
+      "fill": "#eb5",
+      "level": 4,
       "order": 2
+    },
+    {
+      "id": "funds-401k",
+      "displayName": "Funds (401k)",
+      "fill": "#eb5",
+      "level": 5,
+      "order": 4
     },
     {
       "id": "funds-roth",
       "displayName": "Funds (Roth)",
       "fill": "#89ae56",
-      "level": 4,
+      "level": 5,
       "order": 2
-    },
-    {
-      "id": "taxes-401k",
-      "displayName": "Taxes (401k)",
-      "fill": "#de6756",
-      "level": 6,
-      "order": 7
     },
     {
       "id": "funds-retirement",
@@ -118,19 +118,37 @@
       "fill": "#89ae56",
       "level": 6,
       "order": 6
+    },
+    {
+      "id": "funds-retirement-tax-exempt",
+      "displayName": "Tax Exempt Funds",
+      "fill": "#89ae56",
+      "level": 7,
+      "order": 1
+    },
+    {
+      "id": "funds-retirement-taxable",
+      "displayName": "Taxable Funds",
+      "fill": "#eb5",
+      "level": 7,
+      "order": 2
     }
   ],
   "links": [
     {
       "source": "income",
-      "target": "taxes"
+      "target": "tax-deductions"
     },
     {
       "source": "income",
-      "target": "income-posttax"
+      "target": "income-taxable"
     },
     {
-      "source": "income-posttax",
+      "source": "income-taxable",
+      "target": "taxes"
+    },
+    {
+      "source": "income-net",
       "target": "401k-contributions-posttax"
     },
     {
@@ -146,19 +164,19 @@
       "target": "401k-contributions"
     },
     {
-      "source": "income-posttax",
-      "target": "spending"
+      "source": "income-taxable",
+      "target": "income-net"
     },
     {
-      "source": "spending",
+      "source": "income-net",
       "target": "spending-savings"
     },
     {
-      "source": "spending",
+      "source": "income-net",
       "target": "spending-needs"
     },
     {
-      "source": "spending",
+      "source": "income-net",
       "target": "spending-wants"
     },
     {
@@ -170,7 +188,7 @@
       "target": "funds-401k"
     },
     {
-      "source": "income-posttax",
+      "source": "income-net",
       "target": "ira-traditional"
     },
     {
@@ -186,8 +204,12 @@
       "target": "funds-roth"
     },
     {
-      "source": "funds-401k",
-      "target": "taxes-401k"
+      "source": "funds-retirement",
+      "target": "funds-retirement-tax-exempt"
+    },
+    {
+      "source": "funds-retirement",
+      "target": "funds-retirement-taxable"
     },
     {
       "source": "funds-401k",
