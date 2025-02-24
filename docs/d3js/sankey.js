@@ -14,11 +14,12 @@ function createSankey(data) {
 
   // Set up the Sankey diagram layout
   const sankey = d3.sankey()
-    .nodeWidth(20)
-    .nodePadding(10)
-    .nodeAlign(d3.sankeyRight)
-    .extent([[10, 20], [width - 100, height - 2]])
-    .nodeSort((a, b) => sortLinks(a, b));
+    .nodeWidth(40)
+    .nodePadding(20)
+    .nodeAlign(d => d.level)
+    .extent([[10, 20], [width - 100, height - 100]])
+    //.nodeSort((a, b) => sortLinks(a, b))
+    .nodeSort((a, b) => a.level - b.level || a.order - b.order);
 
   function sortLinks(a, b) {
     if (a.top) {
@@ -80,12 +81,9 @@ function createSankey(data) {
     .attr("class", "link")
     .attr("d", d3.sankeyLinkHorizontal())
     .style("stroke-width", d => Math.max(1, d.width))
-    .style("fill", "none")
-    //.style("stroke", d => nodeColorLookup[d.target.id] || "#000")  // Use source node color
     .style("stroke-opacity", d => d.linkOpacity)
     .style("stroke", d => `url(#gradient-${d.source.id}-${d.target.id})`)
-    //.style("stroke", "url(#svgGradient)")
-    ;
+    .style("fill", "none");
 
   var defs = svg.append("defs");
   var gradient = defs
@@ -109,16 +107,24 @@ function createSankey(data) {
     .attr("stop-opacity", 1);
 
   // Add link values
-  // svg.append("g")
-  //   .selectAll(".link-value")
-  //   .data(graph.links)
-  //   .enter().append("text")
-  //   .attr("class", "link-value")
-  //   .attr("x", d => (d.source.x1 + d.target.x0) / 2)
-  //   .attr("y", d => (d.source.y1 + d.target.y0) / 2)
-  //   .attr("dy", ".35em")
-  //   .style("text-anchor", "middle")
-  //   .text(d => `$${d.value.toLocaleString()}`);
+  function centerVertical(d) {
+    return d.y0 + (d.y1 - d.y0) / 2;
+  }
+  svg.append("g")
+    .selectAll(".link-value")
+    .data(graph.links)
+    .enter().append("text")
+    .attr("class", "link-value")
+    .attr("x", d => -centerVertical(d))
+    .attr("y", d => (d.source.x1 + d.target.x0) / 2)
+    .attr("transform", "rotate(-90)")
+    .attr("dy", ".35em")
+    .style("text-anchor", "middle")
+    .style("font-size", "10px")
+    .style("fill", d => d3.color(nodeColorLookup[d.target.id]).darker(1))
+    .style("background-color", "white")
+    .style("font-weight", "bold")
+    .text(d => `$${d.value.toLocaleString()}`);
 
   // Add nodes (elements)
   const node = svg.append("g")
@@ -139,10 +145,12 @@ function createSankey(data) {
   // Add node names
   const textOffset = sankey.nodeWidth() + 10
   node.append("text")
-    .attr("x", textOffset)  // Add some padding to the left
-    .attr("y", d => (d.y1 - d.y0) / 2)
+    .attr("x", d => (d.y0 - d.y1) / 2)  // Center the text vertically
+    .attr("y", 20)
     .attr("dy", ".35em")
-    .style("text-anchor", "start")
+    .attr("transform", "rotate(-90)")
+    .style("text-anchor", "middle")
+    .style("font-weight", "bold")
     .each(function (d) {
       const labelText = d.displayName;
       const valueText = d.value ? `$${d.value.toLocaleString()}` : '';
@@ -153,9 +161,9 @@ function createSankey(data) {
   // Function to wrap text into multiple lines based on a maxWidth
   function wrapText(
     textElement, text,
-    maxWidth = 100,
-    font = "11px sans-serif",
-    lineHeight = 20
+    maxWidth = 50,
+    font = "8px sans-serif",
+    lineHeight = 15
   ) {
     // Break the text into lines
     const lines = breakTextIntoLines(text, maxWidth, font);
@@ -193,11 +201,7 @@ function createSankey(data) {
       const testLineResult = testLine(currentLine + (currentLine ? ' ' : '') + word);
 
       // Test for wrapping
-      if (word.startsWith("$")) {
-        // Always newline if the word starts with a dollar sign
-        lines.push(currentLine);
-        currentLine = word;
-      } else if (testLineResult) {
+      if (testLineResult) {
         // Add the word to the current line if it fits
         currentLine = currentLine ? currentLine + ' ' + word : word;
       } else {
@@ -225,6 +229,7 @@ function updateSankey() {
   const spending = postTaxPay - postTaxContribution - ira;
   const funds401k = preTaxContribution + employerMatch;
   const fundsRoth = postTaxContribution + ira;
+  const taxRate401k = 0.2;
 
   d3.json("sankey.json").then(data => {
     // Update the income-related values
@@ -279,6 +284,11 @@ function updateSankey() {
       if (link.target === "funds-401k") {
         link.value = funds401k;
       }
+      if (link.source === "funds-401k") {
+        if (link.target === "taxes-401k") {
+          link.value = funds401k * taxRate401k;
+        }
+      }
       // IRA Funds
       if (link.target === "funds-roth") {
         if (link.source === "ira-roth") {
@@ -290,7 +300,7 @@ function updateSankey() {
       // Retirement Funds
       if (link.target === "funds-retirement") {
         if (link.source === "funds-401k") {
-          link.value = funds401k;
+          link.value = funds401k * (1 - taxRate401k);
         } else if (link.source === "funds-roth") {
           link.value = fundsRoth;
         }
@@ -303,16 +313,17 @@ function updateSankey() {
   });
 }
 
-// Load the data from the JSON file and create the Sankey diagram
-d3.json("sankey.json").then(data => {
-  updateSankey();
-  createSankey(data);
-});
-
-// Add an event listener to resize the diagram when the window is resized
-window.addEventListener("resize", () => {
+// Function to load data and create/update the Sankey diagram
+function loadAndCreateSankey() {
   d3.json("sankey.json").then(data => {
+    updateSankey();
     createSankey(data);
   });
-});
+}
+
+// Load the data and create the Sankey diagram initially
+loadAndCreateSankey();
+
+// Add an event listener to resize the diagram when the window is resized
+window.addEventListener("resize", loadAndCreateSankey);
 
