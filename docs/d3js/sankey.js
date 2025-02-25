@@ -12,10 +12,21 @@ function createSankey(data) {
   const svg = d3.select("#sankey").append("svg")
     .attr("width", containerWidth)
     .attr("height", containerHeight)
+    .call(d3.zoom().on("zoom", function (event) {
+      svgMouse.attr("transform", event.transform);
+    }))
+    .call(d3.drag().on("drag", function (event) {
+      const dx = event.dx;
+      const dy = event.dy;
+      const currentTransform = d3.zoomTransform(svg.node());
+      svg.call(d3.zoom().transform, d3.zoomIdentity.translate(currentTransform.x + dx, currentTransform.y + dy).scale(currentTransform.k));
+    }));
+
+  const svgMouse = svg.append("g")
 
   // Create a group element to hold the content and apply rotation
   // Note that all child elements are within this rotation, so child.y is reality.x and child.x is reality.y
-  const svgInner = svg.append("g")
+  const svgInner = svgMouse.append("g")
     .attr("transform", `rotate(90) translate(0, ${-containerWidth})`);
 
   // Set up the Sankey diagram layout
@@ -355,4 +366,12 @@ loadAndCreateSankey();
 
 // Add an event listener to resize the diagram when the window is resized
 window.addEventListener("resize", loadAndCreateSankey);
+
+// Add an event listener to enable dragging and resizing
+d3.select("#sankey").call(d3.drag().on("drag", function (event) {
+  const dx = event.dx;
+  const dy = event.dy;
+  const currentTransform = d3.zoomTransform(d3.select("#sankey svg").node());
+  d3.select("#sankey svg").call(d3.zoom().transform, d3.zoomIdentity.translate(currentTransform.x + dx, currentTransform.y + dy).scale(currentTransform.k));
+}));
 
