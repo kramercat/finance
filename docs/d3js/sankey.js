@@ -1,9 +1,15 @@
 // Definitions
-nodeWidth = 40
-nodePadding = 20
+nodeWidth = 60
+nodePadding = 10
+nodeFontSize = "15px"
+nodeFontHeight = 15;
+linkFontSize = "15px"
 stripeWidth = 1
-stripeSpacing = 8
+stripeSpacing = 10
 stripeColor = "#f33"
+legendIconWidth = 60
+legendIconHeight = 30
+legendFontSize = "15px"
 
 // Function to create striped pattern
 function createStripedPattern(defs, id, fillColor) {
@@ -140,11 +146,11 @@ function createSankey(data) {
     .attr("transform", "rotate(-90)")
     .attr("dy", ".35em")
     .style("text-anchor", "middle")
-    .style("font-size", "10px")
+    .style("font-size", linkFontSize)
     .style("fill", d => d3.color(nodeColorLookup[d.target.id]).darker(1))
     .style("background-color", "white")
     .style("font-weight", "bold")
-    .text(d => `$${d.value.toLocaleString()}`);
+    .text(d => numberToDollar(d.value));
 
   // Add nodes (elements)
   const node = svgInner.append("g")
@@ -177,7 +183,6 @@ function createSankey(data) {
     });
 
   // Add node names
-  const textOffset = 15;
   node.append("text")
     .attr("x", d => ((d.y0 || 0) - (d.y1 || 0)) / 2)  // Center the text vertically
     .attr("y", sankey.nodeWidth() / 2)
@@ -187,13 +192,13 @@ function createSankey(data) {
     .style("font-weight", "bold")
     .each(function (d) {
       const labelText = d.displayName;
-      const valueText = d.value ? `$${d.value.toLocaleString()}` : '';
+      const valueText = d.value ? numberToDollar(d.value) : '';
       const fullText = labelText + " " + valueText;
-      wrapText(d3.select(this), fullText, d.value / 160, textOffset);  // Wrap the text
+      wrapText(d3.select(this), fullText, d.value / 180);  // Wrap the text
     });
 
   // Function to wrap text into multiple lines based on maxWidth
-  function wrapText(textElement, text, maxWidth, lineHeight, font = "10px sans-serif") {
+  function wrapText(textElement, text, maxWidth, font = nodeFontSize) {
     const words = text.split(' ');
     let currentLine = '';
     const lines = [];
@@ -219,7 +224,7 @@ function createSankey(data) {
     lines.forEach((line, i) => {
       textElement.append("tspan")
         .attr("x", textElement.attr("x"))
-        .attr("y", parseFloat(textElement.attr("y")) + (i - numLines / 2 + 0.5) * lineHeight)
+        .attr("y", parseFloat(textElement.attr("y")) + (i - numLines / 2 + 0.5) * nodeFontHeight)
         .style("font", font)
         .text(line);
     });
@@ -362,6 +367,10 @@ function updateSankey() {
   });
 }
 
+function numberToDollar(num) {
+  return `$${num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+}
+
 // Add an event listener to enable dragging and resizing
 d3.select("#sankey").call(d3.drag().on("drag", function (event) {
   const dx = event.dx;
@@ -390,9 +399,10 @@ function addLegend() {
 
   // Add a striped pattern to the legend
   legend.append("rect")
-    .attr("width", 40)
-    .attr("height", 20)
+    .attr("width", legendIconWidth)
+    .attr("height", legendIconHeight)
     .attr("stroke", "#999")
+    .attr("transform", `translate(${legendIconWidth}, 0) scale(-1, 1)`)
     .style("fill", "url(#legend-pattern)");
 
   // Define the striped pattern for the legend
@@ -401,9 +411,9 @@ function addLegend() {
 
   // Add text to the legend
   legend.append("text")
-    .attr("x", 50)
-    .attr("y", 15)
-    .style("font-size", "12px")
+    .attr("x", legendIconWidth + 10)
+    .attr("y", legendIconHeight * 2 / 3)
+    .style("font-size", legendFontSize)
     .text("Taxable");
 }
 
