@@ -4,18 +4,19 @@ function createSankey(data) {
   d3.select("#sankey").selectAll("svg").remove();
 
   // Get the current window dimensions
-  const width = window.innerWidth;
-  const height = window.innerHeight * 0.8;
+  const height = window.innerWidth;
+  const width = window.innerHeight * 0.8;
 
   // Create the Sankey diagram
   const svg = d3.select("#sankey").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .attr("transform", "rotate(90)");
 
   // Set up the Sankey diagram layout
   const sankey = d3.sankey()
     .nodeWidth(40)
-    .nodePadding(10)
+    .nodePadding(20)
     .nodeAlign(d => d.level)
     .extent([[10, 20], [width - 100, height - 100]])
     //.nodeSort((a, b) => sortLinks(a, b))
@@ -90,6 +91,7 @@ function createSankey(data) {
     .selectAll(".gradient")
     .data(graph.links)
     .enter().append("linearGradient")
+    .attr('gradientUnits', "userSpaceOnUse")
     .attr("id", d => `gradient-${d.source.id}-${d.target.id}`)
     .attr("x1", "0%")
     .attr("x2", "100%")
@@ -108,7 +110,7 @@ function createSankey(data) {
 
   // Add link values
   function centerVertical(d) {
-    return d.y0 + (d.y1 - d.y0) / 2;
+    return (d.y0 || 0) + ((d.y1 || 0) - (d.y0 || 0)) / 2;
   }
   svg.append("g")
     .selectAll(".link-value")
@@ -132,11 +134,11 @@ function createSankey(data) {
     .data(graph.nodes)
     .enter().append("g")
     .attr("class", "node")
-    .attr("transform", d => `translate(${d.x0},${d.y0})`);
+    .attr("transform", d => `translate(${d.x0 || 0},${d.y0 || 0})`);
 
   // Add node rectangles
   node.append("rect")
-    .attr("height", d => d.y1 - d.y0)
+    .attr("height", d => (d.y1 || 0) - (d.y0 || 0))
     .attr("width", sankey.nodeWidth())
     .style("fill", d => {
       if (d.pattern === "striped") {
@@ -175,9 +177,9 @@ function createSankey(data) {
     .attr("stroke-width", stripeWidth);
 
   // Add node names
-  const textOffset = 15
+  const textOffset = 15;
   node.append("text")
-    .attr("x", d => (d.y0 - d.y1) / 2)  // Center the text vertically
+    .attr("x", d => ((d.y0 || 0) - (d.y1 || 0)) / 2)  // Center the text vertically
     .attr("y", sankey.nodeWidth() / 2)
     .attr("dy", ".35em")
     .attr("transform", "rotate(-90)")
@@ -187,62 +189,40 @@ function createSankey(data) {
       const labelText = d.displayName;
       const valueText = d.value ? `$${d.value.toLocaleString()}` : '';
       const fullText = labelText + " " + valueText;
-      wrapText(d3.select(this), fullText, d.value / 400, textOffset);  // Use wrapText to handle the actual wrapping
+      wrapText(d3.select(this), fullText, d.value / 400, textOffset);  // Wrap the text
     });
 
-  // Function to wrap text into multiple lines based on a maxWidth
-  function wrapText(
-    textElement, text, maxWidth, lineHeight,
-    font = "8px sans-serif"
-  ) {
-    // Break the text into lines
-    const lines = breakTextIntoLines(text, maxWidth, font);
-
-    // Remove the original text content
-    textElement.text(null);
-
-    // Add each line as a tspan, adjusting the vertical position
-    // Vertically center the text based on the number of lines
-    const numLines = lines.length;
-    lines.forEach((line, index) => {
-      textElement.append("tspan")
-        .attr("x", textElement.attr("x"))  // Keep the same x position
-        .attr("y", parseFloat(textElement.attr("y")) + (index - numLines / 2 + 0.5) * lineHeight)  // Adjust the y position
-        .style("font", font)  // Apply the font style
-        .text(line);  // Display the line
-    });
-  }
-
-  // Function to break text into lines (same as the earlier example)
-  function breakTextIntoLines(text, maxWidth, font) {
-    // Split the text into words
+  // Function to wrap text into multiple lines based on maxWidth
+  function wrapText(textElement, text, maxWidth, lineHeight, font = "10px sans-serif") {
     const words = text.split(' ');
-    const lines = [];
     let currentLine = '';
+    const lines = [];
 
-    const testLine = (line) => {
-      // Test the line width
-      const textWidth = svg.append("text").style("font", font).text(line).node().getBBox().width;
-      return textWidth <= maxWidth;
-    };
+    // Measure text width for wrapping
+    const measureWidth = (line) => textElement.style("font", font).text(line).node().getBBox().width;
 
     words.forEach(word => {
-      // Test the line with the new word
-      const testLineResult = testLine(currentLine + (currentLine ? ' ' : '') + word);
-
-      if (!testLineResult || word.startsWith("$")) {
-        // Start a new line if the word doesn't fit
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      if (measureWidth(testLine) > maxWidth || word.startsWith("$")) {
         lines.push(currentLine);
         currentLine = word;
       } else {
-        // Add the word to the current line if it fits
-        currentLine = currentLine ? currentLine + ' ' + word : word;
+        currentLine = testLine;
       }
     });
 
-    // Add the last line
-    lines.push(currentLine);
-    return lines;
+    lines.push(currentLine);  // Add the last line
+
+    // Set the text content with wrapping
+    textElement.text(null);
+    const numLines = lines.length;
+    lines.forEach((line, i) => {
+      textElement.append("tspan")
+        .attr("x", textElement.attr("x"))
+        .attr("y", parseFloat(textElement.attr("y")) + (i - numLines / 2 + 0.5) * lineHeight)
+        .style("font", font)
+        .text(line);
+    });
   }
 }
 

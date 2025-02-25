@@ -24,6 +24,22 @@
       "order": 2
     },
     {
+      "id": "401k-contributions-pretax",
+      "displayName": "401k Pre-Tax Contributions",
+      "fill": "#eb5",
+      "pattern": "striped",
+      "level": 1,
+      "order": 6
+    },
+    {
+      "id": "401k-contributions-employer",
+      "displayName": "401k Employer Match",
+      "fill": "#eb5",
+      "pattern": "striped",
+      "level": 1,
+      "order": 7
+    },
+    {
       "id": "taxes",
       "displayName": "Taxes",
       "fill": "#de6756",
@@ -41,22 +57,22 @@
       "id": "spending-needs",
       "displayName": "Needs (50%)",
       "fill": "#de6756",
-      "level": 3,
-      "order": 1
+      "level": 5,
+      "order": 0
     },
     {
       "id": "spending-wants",
       "displayName": "Wants (30%)",
       "fill": "#de6756",
-      "level": 4,
-      "order": 0
+      "level": 5,
+      "order": 1
     },
     {
       "id": "spending-savings",
       "displayName": "Savings (20%)",
       "fill": "#89ae56",
-      "level": 7,
-      "order": 0
+      "level": 45,
+      "order": 2
     },
     {
       "id": "ira-traditional",
@@ -71,22 +87,6 @@
       "fill": "#89ae56",
       "level": 3,
       "order": 5
-    },
-    {
-      "id": "401k-contributions-pretax",
-      "displayName": "401k Pre-Tax Contributions",
-      "fill": "#eb5",
-      "pattern": "striped",
-      "level": 3,
-      "order": 6
-    },
-    {
-      "id": "401k-contributions-employer",
-      "displayName": "401k Employer Match",
-      "fill": "#eb5",
-      "pattern": "striped",
-      "level": 3,
-      "order": 7
     },
     {
       "id": "ira-roth",
