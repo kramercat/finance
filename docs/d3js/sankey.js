@@ -1,52 +1,29 @@
 // Function to create the Sankey diagram
 function createSankey(data) {
-  // Remove any existing SVG
-  d3.select("#sankey").selectAll("svg").remove();
 
-  // Get the current window dimensions
-  const height = window.innerWidth;
-  const width = window.innerHeight * 0.8;
+  // Select the container element (e.g., a div with ID 'sankey-container')
+  const container = d3.select("#sankey");
+  container.selectAll("svg").remove();
+  const containerWidth = container.node().getBoundingClientRect().width;
+  const boundingHeight = container.node().getBoundingClientRect().height;
+  const containerHeight = Math.max(boundingHeight, 1000);
 
   // Create the Sankey diagram
   const svg = d3.select("#sankey").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("transform", "rotate(90)");
+    .attr("width", containerWidth)
+    .attr("height", containerHeight)
+
+  // Create a group element to hold the content and apply rotation
+  const svgInner = svg.append("g")
+    .attr("transform", `rotate(90) translate(0, ${-containerWidth})`);
 
   // Set up the Sankey diagram layout
   const sankey = d3.sankey()
     .nodeWidth(40)
     .nodePadding(20)
     .nodeAlign(d => d.level)
-    .extent([[10, 20], [width - 100, height - 100]])
-    //.nodeSort((a, b) => sortLinks(a, b))
+    .extent([[0, 0], [containerHeight, containerWidth]])
     .nodeSort((a, b) => a.order - b.order);
-
-  function sortLinks(a, b) {
-    if (a.top) {
-      return -1;
-    } else if (b.top) {
-      return 1;
-    } else if (
-      a.sourceLinks.length == 0 && b.sourceLinks.length > 0
-    ) {
-      return 1;
-    } else if (
-      b.sourceLinks.length == 0 && a.sourceLinks.length > 0
-    ) {
-      return -1;
-    } else if (
-      a.targetLinks.length == 0 && b.targetLinks.length > 0
-    ) {
-      return -1;
-    } else if (
-      b.targetLinks.length == 0 && a.targetLinks.length > 0
-    ) {
-      return 1;
-    } else {
-      return a.displayName - b.displayName;
-    }
-  }
 
   // Create a map of node indices and colors
   const nodeMap = {};
@@ -75,7 +52,7 @@ function createSankey(data) {
   });
 
   // Add links (flows)
-  svg.append("g")
+  svgInner.append("g")
     .selectAll(".link")
     .data(graph.links)
     .enter().append("path")
@@ -86,7 +63,7 @@ function createSankey(data) {
     .style("stroke", d => `url(#gradient-${d.source.id}-${d.target.id})`)
     .style("fill", "none");
 
-  var defs = svg.append("defs");
+  var defs = svgInner.append("defs");
   var gradient = defs
     .selectAll(".gradient")
     .data(graph.links)
@@ -112,7 +89,7 @@ function createSankey(data) {
   function centerVertical(d) {
     return (d.y0 || 0) + ((d.y1 || 0) - (d.y0 || 0)) / 2;
   }
-  svg.append("g")
+  svgInner.append("g")
     .selectAll(".link-value")
     .data(graph.links)
     .enter().append("text")
@@ -129,7 +106,7 @@ function createSankey(data) {
     .text(d => `$${d.value.toLocaleString()}`);
 
   // Add nodes (elements)
-  const node = svg.append("g")
+  const node = svgInner.append("g")
     .selectAll(".node")
     .data(graph.nodes)
     .enter().append("g")
@@ -153,7 +130,7 @@ function createSankey(data) {
   stripeWidth = 1
   stripeSpacing = 8
   stripeColor = "#f33"
-  const nodePatterns = svg.append("defs")
+  const nodePatterns = svgInner.append("defs")
     .selectAll(".node-pattern")
     .data(graph.nodes.filter(d => d.pattern === "striped"))
     .enter().append("pattern")
@@ -189,7 +166,7 @@ function createSankey(data) {
       const labelText = d.displayName;
       const valueText = d.value ? `$${d.value.toLocaleString()}` : '';
       const fullText = labelText + " " + valueText;
-      wrapText(d3.select(this), fullText, d.value / 400, textOffset);  // Wrap the text
+      wrapText(d3.select(this), fullText, d.value / 160, textOffset);  // Wrap the text
     });
 
   // Function to wrap text into multiple lines based on maxWidth
