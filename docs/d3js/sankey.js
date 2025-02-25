@@ -14,6 +14,7 @@ function createSankey(data) {
     .attr("height", containerHeight)
 
   // Create a group element to hold the content and apply rotation
+  // Note that all child elements are within this rotation, so child.y is reality.x and child.x is reality.y
   const svgInner = svg.append("g")
     .attr("transform", `rotate(90) translate(0, ${-containerWidth})`);
 
