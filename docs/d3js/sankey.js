@@ -375,3 +375,12 @@ d3.select("#sankey").call(d3.drag().on("drag", function (event) {
   d3.select("#sankey svg").call(d3.zoom().transform, d3.zoomIdentity.translate(currentTransform.x + dx, currentTransform.y + dy).scale(currentTransform.k));
 }));
 
+// Add a button to reset the SVG interactivity
+const resetButton = document.createElement("button");
+resetButton.innerText = "Reset Interactivity";
+resetButton.addEventListener("click", () => {
+  const svg = d3.select("#sankey svg");
+  svg.call(d3.zoom().transform, d3.zoomIdentity);
+  svg.select("g").attr("transform", "translate(0,0) scale(1)");
+});
+document.body.insertBefore(resetButton, document.getElementById("sankey"));
