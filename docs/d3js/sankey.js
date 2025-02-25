@@ -110,7 +110,6 @@ function createSankey(data) {
     .selectAll(".gradient")
     .data(graph.links)
     .enter().append("linearGradient")
-    .attr('gradientUnits', "userSpaceOnUse")
     .attr("id", d => `gradient-${d.source.id}-${d.target.id}`)
     .attr("x1", "0%")
     .attr("x2", "100%")
