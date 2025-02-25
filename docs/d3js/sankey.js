@@ -1,3 +1,33 @@
+// Definitions
+nodeWidth = 40
+nodePadding = 20
+stripeWidth = 1
+stripeSpacing = 8
+stripeColor = "#f33"
+
+// Function to create striped pattern
+function createStripedPattern(defs, id, fillColor) {
+  const pattern = defs.append("pattern")
+    .attr("id", id)
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("width", stripeWidth)
+    .attr("height", stripeSpacing)
+    .attr("patternTransform", "rotate(45)");
+
+  pattern.append("rect")
+    .attr("width", stripeWidth)
+    .attr("height", stripeSpacing)
+    .attr("fill", fillColor);
+
+  pattern.append("line")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", stripeWidth)
+    .attr("y2", 0)
+    .attr("stroke", stripeColor)
+    .attr("stroke-width", stripeWidth);
+}
+
 // Function to create the Sankey diagram
 function createSankey(data) {
 
@@ -31,8 +61,8 @@ function createSankey(data) {
 
   // Set up the Sankey diagram layout
   const sankey = d3.sankey()
-    .nodeWidth(40)
-    .nodePadding(20)
+    .nodeWidth(nodeWidth)
+    .nodePadding(nodePadding)
     .nodeAlign(d => d.level)
     .extent([[0, 0], [containerHeight, containerWidth]])
     .nodeSort((a, b) => a.order - b.order);
@@ -138,32 +168,14 @@ function createSankey(data) {
     .style("stroke", d => d.stroke)
     .style("stroke-width", d => d.strokeWidth);
 
-  // Define striped patterns for specific nodes
-  stripeWidth = 1
-  stripeSpacing = 8
-  stripeColor = "#f33"
+  // Striped node definition
   const nodePatterns = svgInner.append("defs")
     .selectAll(".node-pattern")
     .data(graph.nodes.filter(d => d.pattern === "striped"))
     .enter().append("pattern")
-    .attr("id", d => `pattern-${d.id}`)
-    .attr("patternUnits", "userSpaceOnUse")
-    .attr("width", stripeWidth)
-    .attr("height", stripeSpacing)
-    .attr("patternTransform", "rotate(45)");
-
-  nodePatterns.append("rect")
-    .attr("width", stripeWidth)
-    .attr("height", stripeSpacing)
-    .attr("fill", d => d.fill);
-
-  nodePatterns.append("line")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", stripeWidth)
-    .attr("y2", 0)
-    .attr("stroke", stripeColor)
-    .attr("stroke-width", stripeWidth);
+    .each(function (d) {
+      createStripedPattern(d3.select(this), `pattern-${d.id}`, d.fill);
+    });
 
   // Add node names
   const textOffset = 15;
@@ -347,25 +359,9 @@ function updateSankey() {
       }
     });
 
-
-
     createSankey(data);
   });
 }
-
-// Function to load data and create/update the Sankey diagram
-function loadAndCreateSankey() {
-  d3.json("sankey.json").then(data => {
-    updateSankey();
-    createSankey(data);
-  });
-}
-
-// Load the data and create the Sankey diagram initially
-loadAndCreateSankey();
-
-// Add an event listener to resize the diagram when the window is resized
-window.addEventListener("resize", loadAndCreateSankey);
 
 // Add an event listener to enable dragging and resizing
 d3.select("#sankey").call(d3.drag().on("drag", function (event) {
@@ -383,4 +379,46 @@ resetButton.addEventListener("click", () => {
   svg.call(d3.zoom().transform, d3.zoomIdentity);
   svg.select("g").attr("transform", "translate(0,0) scale(1)");
 });
-document.body.insertBefore(resetButton, document.getElementById("sankey"));
+document.body.insertBefore(resetButton, document.getElementById("sankey-controls"));
+
+// Add a legend to indicate that the red strip node patterns indicate that the node is taxable
+function addLegend() {
+  const legend = d3.select("#sankey-controls").append("svg")
+    .attr("width", 200)
+    .attr("height", 50)
+    .append("g")
+    .attr("transform", "translate(10,10)");
+
+  // Add a striped pattern to the legend
+  legend.append("rect")
+    .attr("width", 40)
+    .attr("height", 20)
+    .attr("stroke", "#999")
+    .style("fill", "url(#legend-pattern)");
+
+  // Define the striped pattern for the legend
+  const defs = legend.append("defs");
+  createStripedPattern(defs, "legend-pattern", "#ddd");
+
+  // Add text to the legend
+  legend.append("text")
+    .attr("x", 50)
+    .attr("y", 15)
+    .style("font-size", "12px")
+    .text("Taxable");
+}
+
+// Function to load data and create/update the Sankey diagram
+function loadAndCreateSankey() {
+  d3.json("sankey.json").then(data => {
+    updateSankey();
+    createSankey(data);
+  });
+}
+
+// Load the data and create the Sankey diagram initially
+loadAndCreateSankey();
+addLegend();
+
+// Add an event listener to resize the diagram when the window is resized
+window.addEventListener("resize", loadAndCreateSankey);
