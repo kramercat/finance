@@ -29,15 +29,15 @@
         <table>
             <tr>
                 <td><label for="income-amount">Income Amount: </label></td>
-                <td><input type="number" id="income-amount" value="180000"></td>
+                <td><input type="number" id="income-amount" value="180000" onchange="updateSankey()"></td>
             </tr>
             <tr>
                 <td><label for="tax-deductions">Tax Deductions: </label></td>
-                <td><input type="number" id="tax-deductions" value="12000"></td>
+                <td><input type="number" id="tax-deductions" value="12000" onchange="updateSankey()"></td>
             </tr>
             <tr>
                 <td><label for="401k-contributions-pretax">401k Pre-Tax Contribution: </label></td>
-                <td><input type="number" id="401k-contributions-pretax" value="23500"></td>
+                <td><input type="number" id="401k-contributions-pretax" value="23500" onchange="updateSankey()"></td>
             </tr>
             <tr>
                 <td><label for="tax-rate">Effective tax rate: </label></td>
@@ -45,15 +45,15 @@
             </tr>
             <tr>
                 <td><label for="401k-contributions-employer">401k Employer Match: </label></td>
-                <td><input type="number" id="401k-contributions-employer" value="11750"></td>
+                <td><input type="number" id="401k-contributions-employer" value="11750" onchange="updateSankey()"></td>
             </tr>
             <tr>
                 <td><label for="401k-contributions-posttax">401k Post-Tax Contribution: </label></td>
-                <td><input type="number" id="401k-contributions-posttax" value="34750"></td>
+                <td><input type="number" id="401k-contributions-posttax" value="34750" onchange="updateSankey()"></td>
             </tr>
             <tr>
                 <td><label for="ira-traditional">Traditional IRA Contribution: </label></td>
-                <td><input type="number" id="ira-traditional" value="7000"></td>
+                <td><input type="number" id="ira-traditional" value="7000" onchange="updateSankey()"></td>
             </tr>
 
 
@@ -67,7 +67,7 @@
     <div id="sankey-controls"></div>
     <div class="sankey" id="sankey"></div>
 
-    <script src="sankey.js"></script>
+    <script type="module" src="sankey.js"></script>
 </body>
 
 </html>

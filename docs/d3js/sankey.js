@@ -1,38 +1,14 @@
+import { wrapText, createStripedPattern, numberToDollar, calculateTaxes } from './utils.js';
+
 // Definitions
-nodeWidth = 60
-nodePadding = 10
-nodeFontSize = "15px"
-nodeFontHeight = 15;
-linkFontSize = "15px"
-stripeWidth = 1
-stripeSpacing = 10
-stripeColor = "#f33"
-legendIconWidth = 60
-legendIconHeight = 30
-legendFontSize = "15px"
+const nodeWidth = 60
+const nodePadding = 20
 
-// Function to create striped pattern
-function createStripedPattern(defs, id, fillColor) {
-  const pattern = defs.append("pattern")
-    .attr("id", id)
-    .attr("patternUnits", "userSpaceOnUse")
-    .attr("width", stripeWidth)
-    .attr("height", stripeSpacing)
-    .attr("patternTransform", "rotate(45)");
+const linkFontSize = "15px"
 
-  pattern.append("rect")
-    .attr("width", stripeWidth)
-    .attr("height", stripeSpacing)
-    .attr("fill", fillColor);
-
-  pattern.append("line")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", stripeWidth)
-    .attr("y2", 0)
-    .attr("stroke", stripeColor)
-    .attr("stroke-width", stripeWidth);
-}
+const legendIconWidth = 60
+const legendIconHeight = 30
+const legendFontSize = "15px"
 
 // Function to create the Sankey diagram
 function createSankey(data) {
@@ -196,67 +172,6 @@ function createSankey(data) {
       const fullText = labelText + " " + valueText;
       wrapText(d3.select(this), fullText, d.value / 180);  // Wrap the text
     });
-
-  // Function to wrap text into multiple lines based on maxWidth
-  function wrapText(textElement, text, maxWidth, font = nodeFontSize) {
-    const words = text.split(' ');
-    let currentLine = '';
-    const lines = [];
-
-    // Measure text width for wrapping
-    const measureWidth = (line) => textElement.style("font", font).text(line).node().getBBox().width;
-
-    words.forEach(word => {
-      const testLine = currentLine ? `${currentLine} ${word}` : word;
-      if (measureWidth(testLine) > maxWidth || word.startsWith("$")) {
-        lines.push(currentLine);
-        currentLine = word;
-      } else {
-        currentLine = testLine;
-      }
-    });
-
-    lines.push(currentLine);  // Add the last line
-
-    // Set the text content with wrapping
-    textElement.text(null);
-    const numLines = lines.length;
-    lines.forEach((line, i) => {
-      textElement.append("tspan")
-        .attr("x", textElement.attr("x"))
-        .attr("y", parseFloat(textElement.attr("y")) + (i - numLines / 2 + 0.5) * nodeFontHeight)
-        .style("font", font)
-        .text(line);
-    });
-  }
-}
-
-// Function to calculate taxes based on income and tax brackets
-function calculateTaxes(income) {
-  const brackets = [
-    { rate: 0.10, threshold: 11600 },
-    { rate: 0.12, threshold: 47150 },
-    { rate: 0.22, threshold: 100525 },
-    { rate: 0.24, threshold: 191950 },
-    { rate: 0.32, threshold: 243725 },
-    { rate: 0.35, threshold: 609350 },
-    { rate: 0.37, threshold: Infinity }
-  ];
-
-  let taxes = 0;
-  let previousThreshold = 0;
-
-  for (const bracket of brackets) {
-    if (income > bracket.threshold) {
-      taxes += (bracket.threshold - previousThreshold) * bracket.rate;
-      previousThreshold = bracket.threshold;
-    } else {
-      taxes += (income - previousThreshold) * bracket.rate;
-      break;
-    }
-  }
-
-  return taxes;
 }
 
 // Function to update the Sankey diagram with custom values
@@ -365,10 +280,6 @@ function updateSankey() {
 
     createSankey(data);
   });
-}
-
-function numberToDollar(num) {
-  return `$${num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
 }
 
 // Add an event listener to enable dragging and resizing
