@@ -282,6 +282,9 @@ function updateSankey() {
   });
 }
 
+// Make the updateSankey function globally accessible
+window.updateSankey = updateSankey;
+
 // Add an event listener to enable dragging and resizing
 d3.select("#sankey").call(d3.drag().on("drag", function (event) {
   const dx = event.dx;
@@ -292,7 +295,8 @@ d3.select("#sankey").call(d3.drag().on("drag", function (event) {
 
 // Add a button to reset the SVG interactivity
 const resetButton = document.createElement("button");
-resetButton.innerText = "Reset Interactivity";
+resetButton.className = "btn waves-effect waves-light";
+resetButton.innerText = "Reset View";
 resetButton.addEventListener("click", () => {
   const svg = d3.select("#sankey svg");
   svg.call(d3.zoom().transform, d3.zoomIdentity);

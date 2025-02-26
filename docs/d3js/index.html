@@ -7,11 +7,28 @@
     <title>Money Flow</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             font-size: 0.7em;
             margin: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-field label {
+            color: #111;
+        }
+
+        .input-field input[type="number"] {
+            width: 100px;
+            margin-left: 10px;
         }
 
         .sankey {
@@ -25,42 +42,51 @@
 
     <h1>Money Flow</h1>
 
-    <div>
-        <table>
-            <tr>
-                <td><label for="income-amount">Income Amount: </label></td>
-                <td><input type="number" id="income-amount" value="180000" onchange="updateSankey()"></td>
-            </tr>
-            <tr>
-                <td><label for="tax-deductions">Tax Deductions: </label></td>
-                <td><input type="number" id="tax-deductions" value="12000" onchange="updateSankey()"></td>
-            </tr>
-            <tr>
-                <td><label for="401k-contributions-pretax">401k Pre-Tax Contribution: </label></td>
-                <td><input type="number" id="401k-contributions-pretax" value="23500" onchange="updateSankey()"></td>
-            </tr>
-            <tr>
-                <td><label for="tax-rate">Effective tax rate: </label></td>
-                <td><input type="text" id="tax-rate" value="0%" disabled></td>
-            </tr>
-            <tr>
-                <td><label for="401k-contributions-employer">401k Employer Match: </label></td>
-                <td><input type="number" id="401k-contributions-employer" value="11750" onchange="updateSankey()"></td>
-            </tr>
-            <tr>
-                <td><label for="401k-contributions-posttax">401k Post-Tax Contribution: </label></td>
-                <td><input type="number" id="401k-contributions-posttax" value="34750" onchange="updateSankey()"></td>
-            </tr>
-            <tr>
-                <td><label for="ira-traditional">Traditional IRA Contribution: </label></td>
-                <td><input type="number" id="ira-traditional" value="7000" onchange="updateSankey()"></td>
-            </tr>
-
-
-        </table>
-    </div>
-    <div>
-        <button onclick="updateSankey()">Update Diagram</button>
+    <div class="row">
+        <div class="input-field col s6">
+            <input type="range" id="income-amount" min="100000" max="1000000" value="180000" onchange="updateSankey()">
+            <label for="income-amount">Income Amount: $<span id="income-amount-display">180,000</span></label>
+            <input type="number" id="income-amount-input" value="180000" onchange="syncSlider('income-amount')">
+        </div>
+        <div class="input-field col s6">
+            <input type="range" id="tax-deductions" min="0" max="100000" value="12000" onchange="updateSankey()">
+            <label for="tax-deductions">Tax Deductions: $<span id="tax-deductions-display">12,000</span></label>
+            <input type="number" id="tax-deductions-input" value="12000" onchange="syncSlider('tax-deductions')">
+        </div>
+        <div class="input-field col s6">
+            <input type="range" id="401k-contributions-pretax" min="0" max="23500" value="23500"
+                onchange="updateSankey()">
+            <label for="401k-contributions-pretax">401k Pre-Tax Contribution: $<span
+                    id="401k-contributions-pretax-display">23,500</span></label>
+            <input type="number" id="401k-contributions-pretax-input" value="23500"
+                onchange="syncSlider('401k-contributions-pretax')">
+        </div>
+        <div class="input-field col s6">
+            <input type="text" id="tax-rate" value="0%" disabled>
+            <label for="tax-rate">Effective tax rate</label>
+        </div>
+        <div class="input-field col s6">
+            <input type="range" id="401k-contributions-employer" min="0" max="23500" value="11750"
+                onchange="updateSankey()">
+            <label for="401k-contributions-employer">401k Employer Match: $<span
+                    id="401k-contributions-employer-display">11,750</span></label>
+            <input type="number" id="401k-contributions-employer-input" value="11750"
+                onchange="syncSlider('401k-contributions-employer')">
+        </div>
+        <div class="input-field col s6">
+            <input type="range" id="401k-contributions-posttax" min="0" max="70000" value="34750"
+                onchange="updateSankey()">
+            <label for="401k-contributions-posttax">401k Post-Tax Contribution: $<span
+                    id="401k-contributions-posttax-display">34,750</span></label>
+            <input type="number" id="401k-contributions-posttax-input" value="34750"
+                onchange="syncSlider('401k-contributions-posttax')">
+        </div>
+        <div class="input-field col s6">
+            <input type="range" id="ira-traditional" min="0" max="7000" value="7000" onchange="updateSankey()">
+            <label for="ira-traditional">Traditional IRA Contribution: $<span
+                    id="ira-traditional-display">7,000</span></label>
+            <input type="number" id="ira-traditional-input" value="7000" onchange="syncSlider('ira-traditional')">
+        </div>
     </div>
     <hr>
 
@@ -68,6 +94,42 @@
     <div class="sankey" id="sankey"></div>
 
     <script type="module" src="sankey.js"></script>
+    <script>
+        function updateDisplayValues() {
+            document.getElementById('income-amount-display').innerText = (+document.getElementById('income-amount').value).toLocaleString();
+            document.getElementById('income-amount-input').value = document.getElementById('income-amount').value;
+            document.getElementById('tax-deductions-display').innerText = (+document.getElementById('tax-deductions').value).toLocaleString();
+            document.getElementById('tax-deductions-input').value = document.getElementById('tax-deductions').value;
+            document.getElementById('401k-contributions-pretax-display').innerText = (+document.getElementById('401k-contributions-pretax').value).toLocaleString();
+            document.getElementById('401k-contributions-pretax-input').value = document.getElementById('401k-contributions-pretax').value;
+            document.getElementById('401k-contributions-employer-display').innerText = (+document.getElementById('401k-contributions-employer').value).toLocaleString();
+            document.getElementById('401k-contributions-employer-input').value = document.getElementById('401k-contributions-employer').value;
+            document.getElementById('401k-contributions-posttax-display').innerText = (+document.getElementById('401k-contributions-posttax').value).toLocaleString();
+            document.getElementById('401k-contributions-posttax-input').value = document.getElementById('401k-contributions-posttax').value;
+            document.getElementById('ira-traditional-display').innerText = (+document.getElementById('ira-traditional').value).toLocaleString();
+            document.getElementById('ira-traditional-input').value = document.getElementById('ira-traditional').value;
+        }
+
+        function syncSlider(id) {
+            const slider = document.getElementById(id);
+            const input = document.getElementById(id + '-input');
+            slider.value = input.value;
+            updateDisplayValues();
+            updateSankey();
+        }
+
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', updateDisplayValues);
+        });
+
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function () {
+                syncSlider(input.id.replace('-input', ''));
+            });
+        });
+
+        updateDisplayValues();
+    </script>
 </body>
 
 </html>
