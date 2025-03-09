@@ -10,6 +10,9 @@ const legendIconWidth = 60
 const legendIconHeight = 30
 const legendFontSize = "15px"
 
+// Limits
+const contribution401kMax = 70000;
+
 // Function to create the Sankey diagram
 function createSankey(data) {
 
@@ -188,7 +191,6 @@ function updateSankey() {
   document.getElementById("tax-rate").value = (taxRateEffective * 100).toFixed(2) + "%";
 
   // Employer match
-  const contribution401kMax = 70000;
   const contribution401kMaxEmployer = contribution401kMax - contribution401kPreTax;
   // Set slider max
   document.getElementById("401k-contributions-employer").max = contribution401kMaxEmployer;

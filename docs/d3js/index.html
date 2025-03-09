@@ -43,49 +43,64 @@
     <h1>Money Flow</h1>
 
     <div class="row">
-        <div class="input-field col s6">
-            <input type="range" id="income-amount" min="100000" max="1000000" value="180000" onchange="updateSankey()">
-            <label for="income-amount">Income Amount: $<span id="income-amount-display">180,000</span></label>
-            <input type="number" id="income-amount-input" value="180000" onchange="syncSlider('income-amount')">
+        <div class="header-field col s12">
+            <h5>Income</h5>
         </div>
-        <div class="input-field col s6">
-            <input type="range" id="tax-deductions" min="0" max="100000" value="12000" onchange="updateSankey()">
-            <label for="tax-deductions">Tax Deductions: $<span id="tax-deductions-display">12,000</span></label>
-            <input type="number" id="tax-deductions-input" value="12000" onchange="syncSlider('tax-deductions')">
-        </div>
-        <div class="input-field col s6">
-            <input type="range" id="401k-contributions-pretax" min="0" max="23500" value="23500"
+        <div class="input-field col s3">
+            <input type="range" id="income-amount" min="100000" max="1000000" value="180000" step="100"
                 onchange="updateSankey()">
-            <label for="401k-contributions-pretax">401k Pre-Tax Contribution: $<span
-                    id="401k-contributions-pretax-display">23,500</span></label>
-            <input type="number" id="401k-contributions-pretax-input" value="23500"
-                onchange="syncSlider('401k-contributions-pretax')">
+            <label for="income-amount">Income Amount: $<span id="income-amount-display">180,000</span></label>
+            <input type="number" id="income-amount-input" value="180000" step="100"
+                onchange="syncSlider('income-amount')">
         </div>
-        <div class="input-field col s6">
+        <div class="input-field col s3">
+            <input type="range" id="tax-deductions" min="0" max="100000" value="12000" step="100"
+                onchange="updateSankey()">
+            <label for="tax-deductions">Tax Deductions: $<span id="tax-deductions-display">12,000</span></label>
+            <input type="number" id="tax-deductions-input" value="12000" step="100"
+                onchange="syncSlider('tax-deductions')">
+        </div>
+        <div class="input-field col s3">
             <input type="text" id="tax-rate" value="0%" disabled>
             <label for="tax-rate">Effective tax rate</label>
         </div>
-        <div class="input-field col s6">
-            <input type="range" id="401k-contributions-employer" min="0" max="23500" value="11750"
+        <div class="header-field col s12">
+            <h5>401k Contributions</h5>
+        </div>
+        <div class="input-field col s3">
+            <input type="range" id="401k-contributions-pretax" min="0" max="23500" value="23500" step="100"
+                onchange="updateSankey()">
+            <label for="401k-contributions-pretax">401k Pre-Tax Contribution: $<span
+                    id="401k-contributions-pretax-display">23,500</span></label>
+            <input type="number" id="401k-contributions-pretax-input" value="23500" step="100"
+                onchange="syncSlider('401k-contributions-pretax')">
+        </div>
+        <div class="input-field col s3">
+            <input type="range" id="401k-contributions-employer" min="0" max="23500" value="11750" step="100"
                 onchange="updateSankey()">
             <label for="401k-contributions-employer">401k Employer Match: $<span
                     id="401k-contributions-employer-display">11,750</span></label>
-            <input type="number" id="401k-contributions-employer-input" value="11750"
+            <input type="number" id="401k-contributions-employer-input" value="11750" step="100"
                 onchange="syncSlider('401k-contributions-employer')">
         </div>
-        <div class="input-field col s6">
-            <input type="range" id="401k-contributions-posttax" min="0" max="70000" value="34750"
+        <div class="input-field col s3">
+            <input type="range" id="401k-contributions-posttax" min="0" max="70000" value="34750" step="100"
                 onchange="updateSankey()">
             <label for="401k-contributions-posttax">401k Post-Tax Contribution: $<span
                     id="401k-contributions-posttax-display">34,750</span></label>
-            <input type="number" id="401k-contributions-posttax-input" value="34750"
+            <input type="number" id="401k-contributions-posttax-input" value="34750" step="100"
                 onchange="syncSlider('401k-contributions-posttax')">
         </div>
-        <div class="input-field col s6">
-            <input type="range" id="ira-traditional" min="0" max="7000" value="7000" onchange="updateSankey()">
+        <div class="header-field col s12">
+            <h5>IRA Contributions</h5>
+        </div>
+        <div class="input-field col s3">
+            <input type="range" id="ira-traditional" min="0" max="7000" value="7000" step="100"
+                onchange="updateSankey()">
             <label for="ira-traditional">Traditional IRA Contribution: $<span
                     id="ira-traditional-display">7,000</span></label>
-            <input type="number" id="ira-traditional-input" value="7000" onchange="syncSlider('ira-traditional')">
+            <input type="number" id="ira-traditional-input" value="7000" step="100"
+                onchange="syncSlider('ira-traditional')">
         </div>
     </div>
     <hr>
