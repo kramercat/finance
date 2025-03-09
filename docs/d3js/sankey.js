@@ -179,48 +179,109 @@ function createSankey(data) {
 
 // Function to update the Sankey diagram with custom values
 function updateSankey() {
-  // Income & pretax elections
+  // Income
   const incomeAmount = +document.getElementById("income-amount").value;
-  const taxDeductions = +document.getElementById("tax-deductions").value;
-  const contribution401kPreTax = +document.getElementById("401k-contributions-pretax").value;
+  // 401k pretax elections
+  let contribution401kPreTax = +document.getElementById("401k-contributions-pretax").value;
+  // Tax deductions
+  let taxDeductions = +document.getElementById("tax-deductions").value;
+
+  // Pretax limiters
+  if (incomeAmount > document.getElementById("401k-contributions-pretax").max) {
+    document.getElementById("401k-contributions-pretax").max = incomeAmount;
+  }
+  if (document.getElementById("401k-contributions-pretax").max > 23500) {
+    document.getElementById("401k-contributions-pretax").max = 23500;
+  }
+  if (contribution401kPreTax > incomeAmount) {
+    contribution401kPreTax = incomeAmount;
+    document.getElementById("401k-contributions-pretax").max = contribution401kPreTax;
+    document.getElementById("401k-contributions-pretax").value = contribution401kPreTax;
+  }
+  if (incomeAmount > document.getElementById("tax-deductions").max) {
+    document.getElementById("tax-deductions").max = incomeAmount;
+  }
+  if (taxDeductions > incomeAmount - contribution401kPreTax) {
+    taxDeductions = incomeAmount - contribution401kPreTax;
+    document.getElementById("tax-deductions").max = taxDeductions;
+    document.getElementById("tax-deductions").value = taxDeductions;
+  }
+
   // Tax calculations
+  const incomeCalcText = numberToDollar(incomeAmount) + " - " + numberToDollar(contribution401kPreTax) + " - " + numberToDollar(taxDeductions);
+  document.getElementById("income-calc").value = incomeCalcText;
   const taxableIncome = incomeAmount - taxDeductions - contribution401kPreTax;
-  const taxes = calculateTaxes(taxableIncome);
+  document.getElementById("taxable-income").value = "$" + taxableIncome;
+
   // Calculate and show effective tax rate
-  const taxRateEffective = taxes / taxableIncome;
+  const taxes = calculateTaxes(taxableIncome);
+  document.getElementById("tax-paid").value = numberToDollar(taxes);
+  let taxRateEffective = 0;
+  if (taxableIncome === 0) {
+    taxRateEffective = 1;
+  } else {
+    taxRateEffective = taxes / taxableIncome;
+  }
   document.getElementById("tax-rate").value = (taxRateEffective * 100).toFixed(2) + "%";
 
-  // Employer match
+  // Net income
+  const netIncome = taxableIncome - taxes;
+  document.getElementById("net-income").value = numberToDollar(netIncome);
+
+  // 401k Employer match
   const contribution401kMaxEmployer = contribution401kMax - contribution401kPreTax;
-  // Set slider max
+  // 401k Set slider max
   document.getElementById("401k-contributions-employer").max = contribution401kMaxEmployer;
-  updateDisplayValues();
-  // Limit to max employer match
+  if (document.getElementById("401k-contributions-employer").max > contribution401kMaxEmployer) {
+    document.getElementById("401k-contributions-employer").max = contribution401kMaxEmployer;
+  }
+  // 401k Limit to max employer match
   let contribution401kEmployer = +document.getElementById("401k-contributions-employer").value;
   if (contribution401kEmployer > contribution401kMaxEmployer) {
     contribution401kEmployer = contribution401kMaxEmployer;
     document.getElementById("401k-contributions-employer").value = contribution401kEmployer;
   }
-
-  // Post tax elections
+  // 401k Post tax elections
   const contribution401kMaxPostTax = contribution401kMaxEmployer - contribution401kEmployer;
-  // Set slider max
+  // 401k Set slider max
   document.getElementById("401k-contributions-posttax").max = contribution401kMaxPostTax;
-  updateDisplayValues();
-  // Limit to max post-tax
+  if (document.getElementById("401k-contributions-posttax").max > netIncome) {
+    document.getElementById("401k-contributions-posttax").max = netIncome;
+  }
+  // 401k Limit to max post-tax
   let contribution401kPostTax = +document.getElementById("401k-contributions-posttax").value;
   if (contribution401kPostTax > contribution401kMaxPostTax) {
     contribution401kPostTax = contribution401kMaxPostTax;
     document.getElementById("401k-contributions-posttax").value = contribution401kPostTax;
   }
-  const ira = +document.getElementById("ira-traditional").value;
-  // Net income
-  const netIncome = taxableIncome - taxes;
+  // Show after post 401k post tax
+  document.getElementById("after-401k-posttax").value = numberToDollar(netIncome - contribution401kPostTax);
+
+  // IRA
+  const iraMax = Math.min(7000, netIncome - contribution401kPostTax);
+  // IRA Set slider max
+  document.getElementById("ira-traditional").max = iraMax;
+  if (document.getElementById("ira-traditional").max > netIncome) {
+    document.getElementById("ira-traditional").max = netIncome;
+  }
+  // IRA Limit to max post-tax
+  let ira = +document.getElementById("ira-traditional").value;
+  if (ira > iraMax) {
+    ira = iraMax;
+    document.getElementById("ira-traditional").value = ira;
+  }
+
+  // Remaining income
   const remainingIncome = netIncome - contribution401kPostTax - ira;
+  document.getElementById("remaining-income").value = numberToDollar(remainingIncome);
+
+  // Update the display values
+  updateDisplayValues();
 
   // Retirement calculations
   const funds401k = contribution401kPreTax + contribution401kEmployer;
   const fundsRoth = contribution401kPostTax + ira;
+
 
   d3.json("sankey.json").then(data => {
     // Update the income-related values

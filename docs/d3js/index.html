@@ -35,6 +35,10 @@
             width: 100%;
             height: 1200px;
         }
+
+        .switch {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
@@ -42,32 +46,27 @@
 
     <h1>Money Flow</h1>
 
+    <!-- <div class="switch">
+        <label>
+            Annual
+            <input type="checkbox" id="toggle-period">
+            <span class="lever"></span>
+            Monthly
+        </label>
+    </div> -->
+
     <div class="row">
         <div class="header-field col s12">
-            <h5>Income</h5>
+            <h5>Taxable Income</h5>
         </div>
-        <div class="input-field col s3">
-            <input type="range" id="income-amount" min="100000" max="1000000" value="180000" step="100"
+        <div class="input-field col s4">
+            <input type="range" id="income-amount" min="100" max="1000000" value="100000" step="100"
                 onchange="updateSankey()">
             <label for="income-amount">Income Amount: $<span id="income-amount-display">180,000</span></label>
             <input type="number" id="income-amount-input" value="180000" step="100"
                 onchange="syncSlider('income-amount')">
         </div>
-        <div class="input-field col s3">
-            <input type="range" id="tax-deductions" min="0" max="100000" value="12000" step="100"
-                onchange="updateSankey()">
-            <label for="tax-deductions">Tax Deductions: $<span id="tax-deductions-display">12,000</span></label>
-            <input type="number" id="tax-deductions-input" value="12000" step="100"
-                onchange="syncSlider('tax-deductions')">
-        </div>
-        <div class="input-field col s3">
-            <input type="text" id="tax-rate" value="0%" disabled>
-            <label for="tax-rate">Effective tax rate</label>
-        </div>
-        <div class="header-field col s12">
-            <h5>401k Contributions</h5>
-        </div>
-        <div class="input-field col s3">
+        <div class="input-field col s4">
             <input type="range" id="401k-contributions-pretax" min="0" max="23500" value="23500" step="100"
                 onchange="updateSankey()">
             <label for="401k-contributions-pretax">401k Pre-Tax Contribution: $<span
@@ -75,7 +74,37 @@
             <input type="number" id="401k-contributions-pretax-input" value="23500" step="100"
                 onchange="syncSlider('401k-contributions-pretax')">
         </div>
-        <div class="input-field col s3">
+        <div class="input-field col s4">
+            <input type="range" id="tax-deductions" min="0" max="100000" value="12000" step="100"
+                onchange="updateSankey()">
+            <label for="tax-deductions">Tax Deductions: $<span id="tax-deductions-display">12,000</span></label>
+            <input type="number" id="tax-deductions-input" value="12000" step="100"
+                onchange="syncSlider('tax-deductions')">
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="income-calc" value="$0" disabled>
+            <label for="income-calc">Income Calculation</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="taxable-income" value="$0" disabled>
+            <label for="taxable-income">Taxable Income</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="tax-rate" value="0%" disabled>
+            <label for="tax-rate">Effective tax rate</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="tax-paid" value="$0" disabled>
+            <label for="tax-paid">Taxes Paid</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="net-income" value="$0" disabled>
+            <label for="net-income">Net Income</label>
+        </div>
+        <div class="header-field col s12">
+            <h5>Additional Retirement Contributions</h5>
+        </div>
+        <div class="input-field col s4">
             <input type="range" id="401k-contributions-employer" min="0" max="23500" value="11750" step="100"
                 onchange="updateSankey()">
             <label for="401k-contributions-employer">401k Employer Match: $<span
@@ -83,7 +112,7 @@
             <input type="number" id="401k-contributions-employer-input" value="11750" step="100"
                 onchange="syncSlider('401k-contributions-employer')">
         </div>
-        <div class="input-field col s3">
+        <div class="input-field col s4">
             <input type="range" id="401k-contributions-posttax" min="0" max="70000" value="34750" step="100"
                 onchange="updateSankey()">
             <label for="401k-contributions-posttax">401k Post-Tax Contribution: $<span
@@ -91,16 +120,23 @@
             <input type="number" id="401k-contributions-posttax-input" value="34750" step="100"
                 onchange="syncSlider('401k-contributions-posttax')">
         </div>
-        <div class="header-field col s12">
-            <h5>IRA Contributions</h5>
-        </div>
-        <div class="input-field col s3">
+        <div class="input-field col s4">
             <input type="range" id="ira-traditional" min="0" max="7000" value="7000" step="100"
                 onchange="updateSankey()">
-            <label for="ira-traditional">Traditional IRA Contribution: $<span
-                    id="ira-traditional-display">7,000</span></label>
+            <label for="ira-traditional">IRA Contribution: $<span id="ira-traditional-display">7,000</span></label>
             <input type="number" id="ira-traditional-input" value="7000" step="100"
                 onchange="syncSlider('ira-traditional')">
+        </div>
+        <div class="input-field col s4">
+
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="after-401k-posttax" value="$0" disabled>
+            <label for="after-401k-posttax">After 401k Post-Tax</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="remaining-income" value="$0" disabled>
+            <label for="remaining-income">Remaining Income</label>
         </div>
     </div>
     <hr>
@@ -115,6 +151,8 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            let isMonthly = false;
+
             function syncSlider(id) {
                 const slider = document.getElementById(id);
                 const input = document.getElementById(id + '-input');
@@ -122,6 +160,28 @@
                 updateDisplayValues();
                 updateSankey();
             }
+
+            function togglePeriod() {
+                isMonthly = !isMonthly;
+                const factor = isMonthly ? 1 / 12 : 12;
+                const step = isMonthly ? 1 : 100;
+
+                document.querySelectorAll('input[type="range"]').forEach(input => {
+                    input.value = Math.round(input.value * factor);
+                    input.step = step;
+                    input.max = Math.round(input.max * factor);
+                });
+
+                document.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.value = Math.round(input.value * factor);
+                    input.step = step;
+                });
+
+                updateDisplayValues();
+                updateSankey();
+            }
+
+            document.getElementById('toggle-period').addEventListener('change', togglePeriod);
 
             document.querySelectorAll('input[type="range"]').forEach(input => {
                 input.addEventListener('input', updateDisplayValues);
