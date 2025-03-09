@@ -94,41 +94,32 @@
     <div class="sankey" id="sankey"></div>
 
     <script type="module" src="sankey.js"></script>
+    <script type="module">
+        import { updateDisplayValues } from './utils.js';
+        window.updateDisplayValues = updateDisplayValues;
+    </script>
     <script>
-        function updateDisplayValues() {
-            document.getElementById('income-amount-display').innerText = (+document.getElementById('income-amount').value).toLocaleString();
-            document.getElementById('income-amount-input').value = document.getElementById('income-amount').value;
-            document.getElementById('tax-deductions-display').innerText = (+document.getElementById('tax-deductions').value).toLocaleString();
-            document.getElementById('tax-deductions-input').value = document.getElementById('tax-deductions').value;
-            document.getElementById('401k-contributions-pretax-display').innerText = (+document.getElementById('401k-contributions-pretax').value).toLocaleString();
-            document.getElementById('401k-contributions-pretax-input').value = document.getElementById('401k-contributions-pretax').value;
-            document.getElementById('401k-contributions-employer-display').innerText = (+document.getElementById('401k-contributions-employer').value).toLocaleString();
-            document.getElementById('401k-contributions-employer-input').value = document.getElementById('401k-contributions-employer').value;
-            document.getElementById('401k-contributions-posttax-display').innerText = (+document.getElementById('401k-contributions-posttax').value).toLocaleString();
-            document.getElementById('401k-contributions-posttax-input').value = document.getElementById('401k-contributions-posttax').value;
-            document.getElementById('ira-traditional-display').innerText = (+document.getElementById('ira-traditional').value).toLocaleString();
-            document.getElementById('ira-traditional-input').value = document.getElementById('ira-traditional').value;
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            function syncSlider(id) {
+                const slider = document.getElementById(id);
+                const input = document.getElementById(id + '-input');
+                slider.value = input.value;
+                updateDisplayValues();
+                updateSankey();
+            }
 
-        function syncSlider(id) {
-            const slider = document.getElementById(id);
-            const input = document.getElementById(id + '-input');
-            slider.value = input.value;
-            updateDisplayValues();
-            updateSankey();
-        }
-
-        document.querySelectorAll('input[type="range"]').forEach(input => {
-            input.addEventListener('input', updateDisplayValues);
-        });
-
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', function () {
-                syncSlider(input.id.replace('-input', ''));
+            document.querySelectorAll('input[type="range"]').forEach(input => {
+                input.addEventListener('input', updateDisplayValues);
             });
-        });
 
-        updateDisplayValues();
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', function () {
+                    syncSlider(input.id.replace('-input', ''));
+                });
+            });
+
+            updateDisplayValues();
+        });
     </script>
 </body>
 

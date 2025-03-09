@@ -1,4 +1,4 @@
-import { wrapText, createStripedPattern, numberToDollar, calculateTaxes } from './utils.js';
+import { wrapText, createStripedPattern, numberToDollar, calculateTaxes, updateDisplayValues } from './utils.js';
 
 // Definitions
 const nodeWidth = 60
@@ -188,16 +188,36 @@ function updateSankey() {
   document.getElementById("tax-rate").value = (taxRateEffective * 100).toFixed(2) + "%";
 
   // Employer match
-  const contibution401kEmployer = +document.getElementById("401k-contributions-employer").value;
+  const contribution401kMax = 70000;
+  const contribution401kMaxEmployer = contribution401kMax - contribution401kPreTax;
+  // Set slider max
+  document.getElementById("401k-contributions-employer").max = contribution401kMaxEmployer;
+  updateDisplayValues();
+  // Limit to max employer match
+  let contribution401kEmployer = +document.getElementById("401k-contributions-employer").value;
+  if (contribution401kEmployer > contribution401kMaxEmployer) {
+    contribution401kEmployer = contribution401kMaxEmployer;
+    document.getElementById("401k-contributions-employer").value = contribution401kEmployer;
+  }
+
   // Post tax elections
-  const contribution401kPostTax = +document.getElementById("401k-contributions-posttax").value;
+  const contribution401kMaxPostTax = contribution401kMaxEmployer - contribution401kEmployer;
+  // Set slider max
+  document.getElementById("401k-contributions-posttax").max = contribution401kMaxPostTax;
+  updateDisplayValues();
+  // Limit to max post-tax
+  let contribution401kPostTax = +document.getElementById("401k-contributions-posttax").value;
+  if (contribution401kPostTax > contribution401kMaxPostTax) {
+    contribution401kPostTax = contribution401kMaxPostTax;
+    document.getElementById("401k-contributions-posttax").value = contribution401kPostTax;
+  }
   const ira = +document.getElementById("ira-traditional").value;
   // Net income
   const netIncome = taxableIncome - taxes;
   const remainingIncome = netIncome - contribution401kPostTax - ira;
 
   // Retirement calculations
-  const funds401k = contribution401kPreTax + contibution401kEmployer;
+  const funds401k = contribution401kPreTax + contribution401kEmployer;
   const fundsRoth = contribution401kPostTax + ira;
 
   d3.json("sankey.json").then(data => {
@@ -242,7 +262,7 @@ function updateSankey() {
       }
       // Calculate total 401k contributions
       if (link.source === "401k-contributions-employer") {
-        link.value = contibution401kEmployer;
+        link.value = contribution401kEmployer;
       }
       if (link.target === "401k-contributions") {
         if (link.source === "401k-contributions-pretax") {

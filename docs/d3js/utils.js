@@ -93,5 +93,23 @@ function calculateTaxes(income) {
   return taxes;
 }
 
+// Function to update display values
+function updateDisplayValues() {
+  const fields = [
+    'income-amount',
+    'tax-deductions',
+    '401k-contributions-pretax',
+    '401k-contributions-employer',
+    '401k-contributions-posttax',
+    'ira-traditional'
+  ];
+
+  fields.forEach(field => {
+    const value = +document.getElementById(field).value;
+    document.getElementById(`${field}-display`).innerText = value.toLocaleString();
+    document.getElementById(`${field}-input`).value = value;
+  });
+}
+
 // Export the functions
-export { wrapText, createStripedPattern, numberToDollar, calculateTaxes };
+export { updateDisplayValues, wrapText, createStripedPattern, numberToDollar, calculateTaxes };
