@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annual Money Flow</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 0.7em;
+            margin: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-field label {
+            color: #111;
+        }
+
+        .input-field input[type="number"] {
+            width: 100px;
+            margin-left: 10px;
+        }
+
+        .sankey {
+            width: 100%;
+            height: 1200px;
+        }
+
+        .switch {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Annual Money Flow</h1>
+
+    <!-- <div class="switch">
+        <label>
+            Annual
+            <input type="checkbox" id="toggle-period">
+            <span class="lever"></span>
+            Monthly
+        </label>
+    </div> -->
+
+    <div class="row">
+        <div class="header-field col s12">
+            <h5>Taxable Income</h5>
+        </div>
+        <div class="input-field col s4">
+            <input type="range" id="income-amount" min="100" max="1000000" value="100000" step="100"
+                onchange="updateSankey()">
+            <label for="income-amount">Income Amount: $<span id="income-amount-display">180,000</span></label>
+            <input type="number" id="income-amount-input" value="180000" step="100"
+                onchange="syncSlider('income-amount')">
+        </div>
+        <div class="input-field col s4">
+            <input type="range" id="401k-contributions-pretax" min="0" max="23500" value="23500" step="100"
+                onchange="updateSankey()">
+            <label for="401k-contributions-pretax">401k Pre-Tax Contribution: $<span
+                    id="401k-contributions-pretax-display">23,500</span></label>
+            <input type="number" id="401k-contributions-pretax-input" value="23500" step="100"
+                onchange="syncSlider('401k-contributions-pretax')">
+        </div>
+        <div class="input-field col s4">
+            <input type="range" id="tax-deductions" min="0" max="100000" value="12000" step="100"
+                onchange="updateSankey()">
+            <label for="tax-deductions">Tax Deductions: $<span id="tax-deductions-display">12,000</span></label>
+            <input type="number" id="tax-deductions-input" value="12000" step="100"
+                onchange="syncSlider('tax-deductions')">
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="income-calc" value="$0" disabled>
+            <label for="income-calc">Income Calculation</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="taxable-income" value="$0" disabled>
+            <label for="taxable-income">Taxable Income</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="tax-rate" value="0%" disabled>
+            <label for="tax-rate">Effective tax rate</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="tax-paid" value="$0" disabled>
+            <label for="tax-paid">Taxes Paid</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="net-income" value="$0" disabled>
+            <label for="net-income">Net Income</label>
+        </div>
+        <div class="header-field col s12">
+            <h5>Additional Retirement Contributions</h5>
+        </div>
+        <div class="input-field col s4">
+            <input type="range" id="401k-contributions-employer" min="0" max="23500" value="11750" step="100"
+                onchange="updateSankey()">
+            <label for="401k-contributions-employer">401k Employer Match: $<span
+                    id="401k-contributions-employer-display">11,750</span></label>
+            <input type="number" id="401k-contributions-employer-input" value="11750" step="100"
+                onchange="syncSlider('401k-contributions-employer')">
+        </div>
+        <div class="input-field col s4">
+            <input type="range" id="401k-contributions-posttax" min="0" max="70000" value="34750" step="100"
+                onchange="updateSankey()">
+            <label for="401k-contributions-posttax">401k Post-Tax Contribution: $<span
+                    id="401k-contributions-posttax-display">34,750</span></label>
+            <input type="number" id="401k-contributions-posttax-input" value="34750" step="100"
+                onchange="syncSlider('401k-contributions-posttax')">
+        </div>
+        <div class="input-field col s4">
+            <input type="range" id="ira-traditional" min="0" max="7000" value="7000" step="100"
+                onchange="updateSankey()">
+            <label for="ira-traditional">IRA Contribution: $<span id="ira-traditional-display">7,000</span></label>
+            <input type="number" id="ira-traditional-input" value="7000" step="100"
+                onchange="syncSlider('ira-traditional')">
+        </div>
+        <div class="input-field col s4">
+
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="after-401k-posttax" value="$0" disabled>
+            <label for="after-401k-posttax">After 401k Post-Tax</label>
+        </div>
+        <div class="input-field col s4">
+            <input type="text" id="remaining-income" value="$0" disabled>
+            <label for="remaining-income">Remaining Income</label>
+        </div>
+    </div>
+    <hr>
+
+    <div id="sankey-controls"></div>
+    <div class="sankey" id="sankey"></div>
+
+    <script type="module" src="sankey.js"></script>
+    <script type="module">
+        import { updateDisplayValues } from './utils.js';
+        window.updateDisplayValues = updateDisplayValues;
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let isMonthly = false;
+
+            function syncSlider(id) {
+                const slider = document.getElementById(id);
+                const input = document.getElementById(id + '-input');
+                slider.value = input.value;
+                updateDisplayValues();
+                updateSankey();
+            }
+
+            function togglePeriod() {
+                isMonthly = !isMonthly;
+                const factor = isMonthly ? 1 / 12 : 12;
+                const step = isMonthly ? 1 : 100;
+
+                document.querySelectorAll('input[type="range"]').forEach(input => {
+                    input.value = Math.round(input.value * factor);
+                    input.step = step;
+                    input.max = Math.round(input.max * factor);
+                });
+
+                document.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.value = Math.round(input.value * factor);
+                    input.step = step;
+                });
+
+                updateDisplayValues();
+                updateSankey();
+            }
+
+            document.getElementById('toggle-period').addEventListener('change', togglePeriod);
+
+            document.querySelectorAll('input[type="range"]').forEach(input => {
+                input.addEventListener('input', updateDisplayValues);
+            });
+
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', function () {
+                    syncSlider(input.id.replace('-input', ''));
+                });
+            });
+
+            updateDisplayValues();
+        });
+    </script>
+</body>
+
+</html>
