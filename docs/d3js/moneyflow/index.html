@@ -84,7 +84,7 @@ This is not to be used as financial advice, and I take no responsibility for how
             <h5>Taxable Income</h5>
         </div>
         <div class="input-field col s4">
-            <input type="range" id="income-amount" min="100" max="1000000" value="100000" step="100"
+            <input type="range" id="income-amount" min="100" max="1000000" value="120000" step="100"
                 onchange="updateSankey()">
             <label for="income-amount">Income Amount: $<span id="income-amount-display">180,000</span></label>
             <input type="number" id="income-amount-input" value="180000" step="100"
@@ -152,11 +152,12 @@ This is not to be used as financial advice, and I take no responsibility for how
                 onchange="syncSlider('ira-traditional')">
         </div>
         <div class="input-field col s4">
-
+            <input type="text" id="total-401k" value="$0" disabled>
+            <label for="total-401k">Total 401k Contributions</label>
         </div>
         <div class="input-field col s4">
             <input type="text" id="after-401k-posttax" value="$0" disabled>
-            <label for="after-401k-posttax">After 401k Post-Tax</label>
+            <label for="after-401k-posttax">Remaining After 401k Contributions</label>
         </div>
         <div class="input-field col s4">
             <input type="text" id="remaining-income" value="$0" disabled>

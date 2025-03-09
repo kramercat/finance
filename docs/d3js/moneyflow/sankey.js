@@ -254,6 +254,13 @@ function updateSankey() {
     contribution401kPostTax = contribution401kMaxPostTax;
     document.getElementById("401k-contributions-posttax").value = contribution401kPostTax;
   }
+  // Show total 401k contributions
+  const total401k = contribution401kPreTax + contribution401kEmployer + contribution401kPostTax;
+  let total401kText = numberToDollar(total401k)
+  if (total401k === contribution401kMax) {
+    total401kText += " (max)";
+  }
+  document.getElementById("total-401k").value = total401kText;
   // Show after post 401k post tax
   document.getElementById("after-401k-posttax").value = numberToDollar(netIncome - contribution401kPostTax);
 
