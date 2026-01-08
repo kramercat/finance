@@ -1,11 +1,11 @@
 # finance
-Flow chart of retirement contribution strategies in US.  
+Flow chart of retirement contribution strategies in US.
 Please check with a professional regarding your tax liabilities before proceeding. This should not be treated as financial advice and I am not responsible for how you use this information.
 
 Note that the values in the graph are based on values for 2026:
 
 ## 401K contributions = max $72,000 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500)
-   - Max $24,500 employee contribution (up from $23,500 in 2025)  
+   - Max $24,500 employee contribution 
    - Example employer match, let's say 50%, up to $12,250 maximum  
    - This leaves $35,250 for after-tax 401K contributions ($72,000 total - $24,500 employee - $12,250 employer)  
 
@@ -19,7 +19,6 @@ Note that the values in the graph are based on values for 2026:
 | Single          | >= $153,000 and < $168,000   | Reduced amount                                   |
 | Single          | >= $168,000                  | No direct contributions, so do the backdoor Roth |
 </details>
-
 <details>
    <summary>Joint filing</summary>
    
@@ -105,3 +104,4 @@ classDef red fill:#ff0000,stroke:#ff0000,color:#ffffff
 classDef orange fill:#ff6600,stroke:#ff3300,color:#ffffff
 classDef green fill:#009966,stroke:#009955,color:#ffffff
 classDef blue fill:#0077ff,stroke:#0055ff,color:#ffffff
+```
