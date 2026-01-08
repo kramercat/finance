@@ -2,31 +2,31 @@
 Flow chart of retirement contribution strategies in US.
 Please check with a professional regarding your tax liabilities before proceeding. This should not be treated as financial advice and I am not responsible for how you use this information.
 
-Note that the values in the graph are based on values for 2025:
+Note that the values in the graph are based on values for 2026:
 
-## 401K contributions = max $70,000 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-23500-for-2025-ira-limit-remains-7000)
-   - Max $23,500 employee contribution
-   - Example employer match, let's just say 50%, up to $11,750 maximum
-   - This leaves $34,750 for post-tax 401K contributions ($70,000 total - $23,500 employee - $11,750 employer)
+## 401K contributions = max $72,000 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500)
+   - Max $24,500 employee contribution 
+   - Example employer match, let's say 50%, up to $12,250 maximum
+   - This leaves $35,250 for after-tax 401K contributions ($72,000 total - $24,500 employee - $12,250 employer)
 
-## Roth IRA contributions = max $7,000 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-23500-for-2025-ira-limit-remains-7000)
+## Roth IRA contributions = max $7,500 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500)
 <details>
    <summary>Single filing</summary>
    
 | Filing Status   | AGI Range                    | Contribution Status                              |
 |-----------------|------------------------------|--------------------------------------------------|
-| Single          | < $150,000                   | Direct contributions allowed up to limit         |
-| Single          | >= $150,000 and < $165,000   | Reduced amount                                   |
-| Single          | >= $165,000                  | No direct contributions, so do the backdoor Roth |
+| Single          | < $153,000                   | Direct contributions allowed up to limit         |
+| Single          | >= $153,000 and < $168,000   | Reduced amount                                   |
+| Single          | >= $168,000                  | No direct contributions, so do the backdoor Roth |
 </details>
 <details>
    <summary>Joint filing</summary>
    
 | Filing Status   | AGI Range                    | Contribution Status                              |
 |-----------------|------------------------------|--------------------------------------------------|
-| Joint           | < $236,000                   | Direct contributions allowed up to limit         |
-| Joint           | >= $236,000 and < $246,000   | Reduced amount                                   |
-| Joint           | >= $246,000                  | No direct contributions, so do the backdoor Roth |
+| Joint           | < $242,000                   | Direct contributions allowed up to limit         |
+| Joint           | >= $242,000 and < $252,000   | Reduced amount                                   |
+| Joint           | >= $252,000                  | No direct contributions, so do the backdoor Roth |
 </details>
 
 ## Roth Ladder
@@ -54,22 +54,22 @@ ira-trad[Traditional IRA]:::green
 ira-roth[Roth IRA]:::green
 
 subgraph 401K - Vanguard
-  401k-info{{Max total contributions<br/>$70,000}}:::blue
+  401k-info{{Max total contributions<br/>$72,000}}:::blue
   401k-trad[Traditional 401K]:::orange
   401k-roth[Roth 401K]:::green
 end
 
 %% Arrows / Flows
-Company --Employer contribution<br/>50% match<br/><b>$11,750</b>--> 401k-trad
+Company --Employer contribution<br/>50% match<br/><b>$12,250</b>--> 401k-trad
 Company ==> pretax
-pretax --Employee contribution<br/><b>$23,500</b>--> 401k-trad
+pretax --Employee contribution<br/><b>$24,500</b>--> 401k-trad
 pretax ==> posttax
 
-posttax --Post tax contribution<br/><b>$34,750</b><br/>--> 401k-trad
-401k-trad --Mega backdoor Roth<br/><b>$34,750</b><br/>Immediate conversion-->401k-roth
+posttax --Post tax contribution<br/><b>$35,250</b><br/>--> 401k-trad
+401k-trad --Mega backdoor Roth<br/><b>$35,250</b><br/>Immediate conversion-->401k-roth
 
 401k-roth --Transfer--> ira-roth
-posttax --Backdoor Roth<br/><b>$7,000</b><br/><i>Only do this if you do not have any pre-tax money in traditional IRAs</i>--> ira-trad 
+posttax --Backdoor Roth<br/><b>$7,500</b><br/><i>Only do this if you do not have any pre-tax money in traditional IRAs</i>--> ira-trad 
 ira-trad --Immediate conversion--> ira-roth
 
 subgraph Early
