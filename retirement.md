@@ -8,13 +8,8 @@ Note that the values in the graph are based on values for 2026:
    - Max $24,500 employee contribution (up from $23,500 in 2025)  
    - Example employer match, let's say 50%, up to $12,250 maximum  
    - This leaves $35,250 for after-tax 401K contributions ($72,000 total - $24,500 employee - $12,250 employer)  
-   - Catch-up contribution for age 50+ is $8,000 (up from $7,500 in 2025)  
-   - “Super” catch-up for ages 60–63 remains $11,250
 
 ## Roth IRA contributions = max $7,500 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500)
-   - Max $7,500 total contribution (up from $7,000 in 2025)  
-   - IRA catch-up (age 50+) is $1,100 (up from $1,000)
-
 <details>
    <summary>Single filing</summary>
    
