@@ -6,8 +6,8 @@ Note that the values in the graph are based on values for 2026:
 
 ## 401K contributions = max $72,000 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500)
    - Max $24,500 employee contribution 
-   - Example employer match, let's say 50%, up to $12,250 maximum  
-   - This leaves $35,250 for after-tax 401K contributions ($72,000 total - $24,500 employee - $12,250 employer)  
+   - Example employer match, let's say 50%, up to $12,250 maximum
+   - This leaves $35,250 for after-tax 401K contributions ($72,000 total - $24,500 employee - $12,250 employer)
 
 ## Roth IRA contributions = max $7,500 total [Sourced from IRS](https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500)
 <details>
@@ -30,9 +30,9 @@ Note that the values in the graph are based on values for 2026:
 </details>
 
 ## Roth Ladder
-Typically, you can withdraw your contributions from Roth plans early without penalty (as long as you don’t touch earnings).
+Typically, you can withdraw your contributions from Roth plans early without penalty (as long as you don't touch earnings).
 
-However, for each Roth conversion performed (backdoor or mega backdoor), you must wait **5 years from the conversion date** before you can do this. As a result, this is commonly termed as the *“Roth ladder”* since it is 5 years from each conversion.
+However, for each Roth conversion performed (backdoor or mega backdoor), you must wait 5 years from the conversion date before you can do this. As a result, this is commonly termed as the "roth ladder" since it is 5 years from each conversion.
 
 [More information via Investopedia](https://www.investopedia.com/how-roth-conversion-ladder-works-5214808)
 
